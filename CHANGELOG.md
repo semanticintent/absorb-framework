@@ -34,6 +34,10 @@
 - Defined "agentic". Explained the name through absorptive capacity (Cohen and Levinthal, 1990).
 - Name check: no conflicting framework on GitHub or Zenodo. git-absorb, a popular Git tool, shares the name.
 
+### 2026-11-02: license and repository name
+
+- MIT license added for the whole repository, matching the author's other records. Planned repository: `semanticintent/absorb-framework`.
+
 ### 2026-10-26: first draft
 
 - Framework, assessment page, validation plan, historical note and case-study template drafted in a working session.

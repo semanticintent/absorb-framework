@@ -21,7 +21,7 @@ keywords:
   - readiness assessment
   - theory of constraints
   - verification
-# TODO: add after publishing.
-# repository-code: "https://github.com/<user>/absorb"
+license: MIT
+# TODO: uncomment once the repository exists, and add the DOI after the Zenodo release.
+# repository-code: "https://github.com/semanticintent/absorb-framework"
 # doi: "10.5281/zenodo.<id>"
-# license: CC-BY-4.0

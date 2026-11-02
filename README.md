@@ -30,6 +30,7 @@ The first line is not new. DORA's 2025 report calls AI an amplifier of an organi
 | [`case-studies/TEMPLATE.md`](case-studies/TEMPLATE.md) | A template for documenting an application of the framework |
 | [`CHANGELOG.md`](CHANGELOG.md) | What changed, and why |
 | [`CITATION.cff`](CITATION.cff) | Citation metadata |
+| [`LICENSE`](LICENSE) | MIT |
 
 ## Quick start
 
@@ -56,7 +57,7 @@ See [`CITATION.cff`](CITATION.cff). Please cite the version you used.
 
 ## License
 
-Not yet chosen. Until a `LICENSE` file is added, this work is not open source.
+[MIT](LICENSE), covering both the written framework and the assessment page, consistent with the author's other records.
 
 ## Contributing and feedback
 

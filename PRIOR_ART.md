@@ -66,7 +66,7 @@ The draft listed four claimed differences to check after reading the related wor
 | ABSORB asks whether the system downstream of coding can absorb speed, not whether teams are ready to adopt AI tools | **Refuted as a difference from DORA**, confirmed against Codurance DARA and Augment | DORA's amplifier finding is the same argument. Present it as DORA's finding, not ABSORB's |
 | It derives autonomy tiers from verification and governance evidence, not from a single maturity score | **Confirmed** for the works read; unclear for DORA's full report | None of the pages read defines tiers for agent-authored change. DORA's change-approval guide implies risk-based scrutiny without tiers |
 | It pairs stage timing with an Amdahl-style speedup check, so the constraint is found from data | **Partly confirmed** | DORA's value-stream guide records lead and process time per block but gives no speedup model. No other work read does either |
-| It is a self-contained, open, offline assessment with a written spec | **Confirmed, with one condition** | DARA is a paid engagement, Augment offers no tool, and DORA's quick check is an online survey. ABSORB is not open source until a `LICENSE` file is added |
+| It is a self-contained, open, offline assessment with a written spec | **Confirmed** | DARA is a paid engagement, Augment offers no tool, and DORA's quick check is an online survey. ABSORB is MIT-licensed |
 
 ## Related work by the author
 
@@ -82,6 +82,6 @@ ABSORB stands on its own and draws its theory from outside sources. These earlie
 
 - No framework named ABSORB was found in web searches on 2026-10-26 for AI readiness and software delivery.
 - "Absorptive capacity" is an established academic concept (above). The name is chosen to echo it, and `SPEC.md` says so.
-- GitHub, 2026-11-02: no framework or assessment named ABSORB. The most prominent use is [git-absorb](https://github.com/tummychow/git-absorb), a popular Git tool (about 5,700 stars). It is a different kind of thing, but it is in front of the same developer audience and will share search results. Prefer a qualified repository name such as `absorb-framework`.
+- GitHub, 2026-11-02: no framework or assessment named ABSORB. The most prominent use is [git-absorb](https://github.com/tummychow/git-absorb), a popular Git tool (about 5,700 stars). It is a different kind of thing, but it is in front of the same developer audience and will share search results. The repository will be named `absorb-framework` for this reason.
 - Zenodo, 2026-11-02: no record on delivery readiness. The nearest match is an unrelated "AbsORB" metadata corpus on online book reviews.
 - Not yet done: a trademark database search (for example USPTO and CIPO) in the software and consulting classes. PROOF and SPAN remain fallbacks.
