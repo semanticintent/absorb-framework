@@ -187,7 +187,8 @@ An interactive version of this framework scores D1 to D8, reads the maturity lev
 | --- | --- | --- |
 | Goal | More output, lower cost, lower risk, or a mix | A readout line that frames the results |
 | Stage timing | Elapsed days at seven stages, optional hands-on days, and where AI has sped up the work | A pipeline view of every stage split into hands-on and waiting time, the longest stage not yet sped up, and a what-if for one stage (faster work, less waiting) with its whole-path speedup (an upper bound when hands-on days are missing) |
-| Statements | 24 ratings from 0 (not true) to 4 (fully true) | A score per dimension and the weakest dimension |
+| Statements | 24 ratings from 0 (not true) to 4 (fully true), one at a time (guided, keyboard-friendly) or all at once | A score per dimension and the weakest dimension |
+| Second rater (optional) | A colleague's result code, which holds only their 24 ratings | Both raters' dimension scores side by side, the average gap per dimension against the 0.5 aim in H5, agreement within 1 point, weighted kappa, and the statements where the two differ by 2 points or more |
 | Baseline metrics (optional) | Seven metrics from the metrics table above | Values recorded in the summary, not scored |
 
 Scoring rules:

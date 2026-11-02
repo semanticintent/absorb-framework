@@ -126,7 +126,7 @@ fieldset.dim legend .id { font-family: var(--font-mono); font-size: 12px; color:
 .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 16px; }
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .field span.hint { color: var(--muted); font-size: 12px; }
-input[type="number"], select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; min-width: 0; }
+input[type="number"], input[type="text"], input:not([type]), select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; min-width: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips label { position: relative; }
 .chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -183,6 +183,50 @@ td input[type="number"] { max-width: 110px; }
 .pipe-out .hero { font-size: 48px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
 .pipe-out .hero-l { font-size: 14px; color: var(--muted); }
 .pipe-out p { flex-basis: 100%; font-size: 14px; max-width: 72ch; }
+/* comparison: you = teal filled dot, them = violet ring (light #008A9C/#6250D6 pass; dark #139FB4/#9085E9 pass, deutan 7.8 so shape is the second cue) */
+:root { --you: #008A9C; --them: #6250D6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --you: #139FB4; --them: #9085E9; } }
+:root[data-theme="dark"] { --you: #139FB4; --them: #9085E9; }
+.cmp-codes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; }
+.cmp-codes input { font-family: var(--font-mono); font-size: 13px; }
+.cmp-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); }
+.cmp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot.you { background: var(--you); }
+.dot.them { background: transparent; border: 2.5px solid var(--them); width: 16px; height: 16px; }
+.cmp-legend .dot.them { width: 12px; height: 12px; }
+.db { display: flex; flex-direction: column; gap: 6px; }
+.db-row { display: grid; grid-template-columns: minmax(118px, 220px) minmax(0, 1fr) 76px; gap: 12px; align-items: center; font-size: 13px; border-radius: 4px; }
+.db-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.db-row .name .id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-right: 6px; }
+.db-track { position: relative; height: 22px; }
+.db-track::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid var(--line); }
+.db-link { position: absolute; top: calc(50% - 1px); height: 2px; background: var(--muted); opacity: 0.6; }
+.db-track .dot { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+.db-track .dot.you { box-shadow: 0 0 0 2px var(--surface); }
+.db-row .val { font-family: var(--font-mono); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.cmp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.gaps { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.gaps li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 10px; font-size: 14px; align-items: baseline; }
+.gaps .who { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+/* guided mode */
+.guided { gap: 18px; }
+.g-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; }
+.g-stmt { font-size: clamp(19px, 2.6vw, 24px); line-height: 1.35; font-weight: 500; max-width: 46ch; min-height: 3.2em; }
+.g-scale { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.g-scale button { font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 12px 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.g-scale button b { font-family: var(--font-mono); font-size: 20px; font-weight: 500; }
+.g-scale button span { font-size: 12px; color: var(--muted); }
+.g-scale button:hover { border-color: var(--accent); }
+.g-scale button[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.g-scale button[aria-checked="true"] span { color: var(--on-accent); }
+.g-scale button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.g-dots { display: flex; flex-wrap: wrap; gap: 3px; }
+.g-dots i { width: 8px; height: 8px; border-radius: 2px; background: var(--track); }
+.g-dots i.on { background: var(--accent); }
+.g-dots i.cur { outline: 2px solid var(--ink); outline-offset: 1px; }
+@media (max-width: 560px) { .g-scale button span { display: none; } .gaps li { grid-template-columns: 1fr; } .gaps .who { text-align: left; } .db-row { grid-template-columns: 1fr 64px; } .db-row .name { grid-column: 1 / -1; } }
 details.pipe-table summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 details.pipe-table table { margin-top: 8px; }
 @media (max-width: 560px) {
@@ -226,49 +270,49 @@ details.pipe-table table { margin-top: 8px; }
   var SCALE = ["Not true", "Rarely true", "Partly true", "Mostly true", "Fully true"];
 
   var DIMS = [
-    { id: "D1", name: "Flow and constraints", covers: "The path from request to customer use, including stages outside engineering.",
+    { id: "D1", ev: "Value stream map, queue times, lead time by stage.", name: "Flow and constraints", covers: "The path from request to customer use, including stages outside engineering.",
       q: ["We have mapped the path from request to customer use, including stages outside engineering.",
           "We know how long changes wait at each stage, not only how long the work takes.",
           "Approvals, releases and rollouts have been sped up or redesigned, not only coding."],
       moves: ["Map one real change end to end and time every wait. Pick the longest stage AI has not touched and set a target for it.",
               "Automate or batch approval and release steps that wait for people, and agree waiting-time targets for each stage."] },
-    { id: "D2", name: "Verification and evidence", covers: "Tests, independent checks, AI review, and proof that a change is safe.",
+    { id: "D2", ev: "Coverage, flaky-test rate, escaped defects, who writes the tests and the review, sampled audits of approved changes.", name: "Verification and evidence", covers: "Tests, independent checks, AI review, and proof that a change is safe.",
       q: ["Automated tests give us enough confidence to ship routine changes.",
           "Changes are checked by tests or reviewers that are independent of the AI that wrote them.",
           "We track escaped defects and use them to improve tests and review."],
       moves: ["Put an AI review on every change through a different path from the author agent, and audit a sample of approved changes each week.",
               "Log every escaped defect with the check that should have caught it, and add that check."] },
-    { id: "D3", name: "Risk-tiered governance", covers: "Which changes need which level of human involvement.",
+    { id: "D3", ev: "Merge policy, exception logs, audit trail.", name: "Risk-tiered governance", covers: "Which changes need which level of human involvement.",
       q: ["Changes are sorted into risk tiers with different review requirements.",
           "A written policy says which changes may merge with no human or with one human.",
           "Exceptions and overrides are logged and reviewed."],
       moves: ["Draft four tiers with examples from your own repositories. Start by letting only the lowest tier merge with automated checks.",
               "Log every override of the policy and review the log monthly."] },
-    { id: "D4", name: "Intent and specification", covers: "Clarity of requirements, acceptance criteria and recorded decisions.",
+    { id: "D4", ev: "Sample tickets, links from specs to tests, decision records.", name: "Intent and specification", covers: "Clarity of requirements, acceptance criteria and recorded decisions.",
       q: ["Work arrives with clear acceptance criteria before building starts.",
           "Decisions and constraints are recorded where both people and agents can read them.",
           "Each change can be traced to a requirement and to the tests that check it."],
       moves: ["Require acceptance criteria before work starts, and reject tickets that lack them.",
               "Keep decision records in the repository and link tests to the criteria they cover."] },
-    { id: "D5", name: "Environment and platform", covers: "CI speed, repository scale, previews, rollback and observability.",
+    { id: "D5", ev: "CI queue time, rollback time, quality of repository docs.", name: "Environment and platform", covers: "CI speed, repository scale, previews, rollback and observability.",
       q: ["CI and builds stay fast as the number of changes grows.",
           "Any release can be rolled back quickly and safely.",
           "Agents have the context they need: repository docs, conventions, preview environments and observability."],
       moves: ["Measure CI queue time and rollback time this week and fix the slower of the two first.",
               "Write the repository conventions and context agents need into versioned files, and add preview environments."] },
-    { id: "D6", name: "Accountability and ownership", covers: "Named humans for services and for release decisions.",
+    { id: "D6", ev: "Ownership map, on-call rota, incident reviews.", name: "Accountability and ownership", covers: "Named humans for services and for release decisions.",
       q: ["Every service has a named owner.",
           "A named person approves production releases for each service.",
           "Incidents involving AI-written changes have a clear review process."],
       moves: ["Publish an ownership map and name a release approver for every service.",
               "Define an incident review for AI-written changes and run it on the next incident."] },
-    { id: "D7", name: "Measurement", covers: "Outcome metrics rather than activity metrics.",
+    { id: "D7", ev: "Dashboards in use, metric definitions.", name: "Measurement", covers: "Outcome metrics rather than activity metrics.",
       q: ["We measure outcomes such as lead time, reverts and production incidents.",
           "We do not treat PR counts or the share of AI-written code as success measures.",
           "Reviews of these metrics regularly change decisions."],
       moves: ["Replace PR-count dashboards with lead time, review wait, revert rate and incidents per change.",
               "Review the metrics monthly with the people who own the stages."] },
-    { id: "D8", name: "People and change", covers: "Skills, roles, junior pipeline, incentives and training.",
+    { id: "D8", ev: "Interviews, attrition, reviewer load, training records, current role definitions.", name: "People and change", covers: "Skills, roles, junior pipeline, incentives and training.",
       q: ["Reviewers' workload is sustainable at the current volume of changes.",
           "People have training and time to learn to work with AI tools.",
           "Junior engineers have a path to build judgment."],
@@ -317,13 +361,13 @@ details.pipe-table table { margin-top: 8px; }
       sample: true, goal: "output",
       answers: [[2,1,1],[2,2,2],[2,1,2],[2,2,1],[3,2,2],[3,2,2],[1,2,1],[2,2,1]],
       days: [3, 4, 2, 5, 3, 6, 9], touch: [0.5, 1, 1.5, 0.5, 1, 0.5, 1], ai: [false, false, true, false, false, false, false],
-      sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}
+      sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "list", gi: 0, compare: { code: "", name: "" }
     };
   }
   function blankState() {
     var a = []; for (var i = 0; i < DIMS.length; i++) a.push([null, null, null]);
     return { sample: false, goal: "output", answers: a, days: STAGES.map(function () { return null; }),
-      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3, cut: 0 }, metrics: {} };
+      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "guided", gi: 0, compare: { code: "", name: "" } };
   }
 
   var state;
@@ -333,6 +377,9 @@ details.pipe-table table { margin-top: 8px; }
   if (!state.sp) state.sp = { stage: 2, factor: 3, cut: 0 };
   state.sp.factor = Math.min(20, Math.max(1, +state.sp.factor || 1));
   state.sp.cut = Math.min(90, Math.max(0, +state.sp.cut || 0));
+  if (state.mode !== "guided" && state.mode !== "list") state.mode = state.sample ? "list" : "guided";
+  state.gi = Math.min(23, Math.max(0, +state.gi || 0));
+  if (!state.compare) state.compare = { code: "", name: "" };
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
   function $(id) { return document.getElementById(id); }
@@ -481,12 +528,23 @@ details.pipe-table table { margin-top: 8px; }
     } else { h += '<p class="caption">Answer some statements to see suggested first moves.</p>'; }
     h += '</section>';
 
+    /* compare */
+    h += '<section class="card" id="cmp-card"><h2>Compare with a colleague</h2>' +
+      '<p class="sub">Two people score the same team on their own, then swap codes. Where you differ is where to start the conversation. A code holds only the 24 ratings, nothing else, and nothing is sent anywhere.</p>' +
+      '<div class="cmp-codes"><label class="field">Your code<input id="cmp-mine" readonly aria-describedby="cmp-msg"></label>' +
+      '<label class="field">Their code<input id="cmp-theirs" placeholder="ABSORB1-…" autocomplete="off" spellcheck="false"></label>' +
+      '<label class="field">Their name (optional)<input id="cmp-name" maxlength="40" autocomplete="off"></label></div>' +
+      '<div class="btns"><button class="btn" data-act="copy-code">Copy your code</button><button class="btn" data-act="clear-cmp">Clear comparison</button><span class="caption" id="cmp-msg" aria-live="polite"></span></div>' +
+      '<div id="cmp-out" class="db"></div></section>';
+
     /* summary */
     h += '<section class="card"><h2>Summary to copy</h2><p class="sub">Plain text you can paste into a document or message.</p><textarea id="summary" readonly aria-label="Assessment summary"></textarea><div class="btns"><button class="btn primary" data-act="copy">Copy summary</button><span id="copy-note" class="caption" aria-live="polite"></span></div></section>';
 
     $("panel-results").innerHTML = h;
     $("summary").value = summaryText(c, goal, low);
     if (c.total > 0) paintPipe(c);
+    $("cmp-theirs").value = state.compare.code; $("cmp-name").value = state.compare.name;
+    paintCompare(c);
   }
 
   /* ---------- pipeline view ---------- */
@@ -594,6 +652,91 @@ details.pipe-table table { margin-top: 8px; }
     tbl.appendChild(bd); tb.appendChild(tbl);
   }
 
+  /* ---------- comparison ---------- */
+  var CODE_RE = /^ABSORB1-([0-4-]{24})([A-G])$/;
+  function encodeCode(ans) {
+    var body = "", sum = 0, k = 0;
+    ans.forEach(function (d) { d.forEach(function (v) { k++; var ok = v !== null && v !== undefined; body += ok ? String(v) : "-"; if (ok) sum += k * v; }); });
+    return "ABSORB1-" + body + "ABCDEFG".charAt(sum % 7);
+  }
+  function decodeCode(str) {
+    var m = CODE_RE.exec(String(str).replace(/\s+/g, "").toUpperCase());
+    if (!m) return { error: "That does not look like an ABSORB code. It should start with ABSORB1- followed by 25 characters." };
+    var vals = m[1].split("").map(function (ch) { return ch === "-" ? null : +ch; }), sum = 0;
+    vals.forEach(function (v, i) { if (v !== null) sum += (i + 1) * v; });
+    if ("ABCDEFG".charAt(sum % 7) !== m[2]) return { error: "The last character does not match. Check that the code was copied in full." };
+    var a = []; for (var i = 0; i < 8; i++) a.push(vals.slice(i * 3, i * 3 + 3));
+    return { answers: a };
+  }
+  function dimScores(ans) { return ans.map(function (d) { var v = d.filter(function (x) { return x !== null && x !== undefined; }); return v.length ? v.reduce(function (a, b) { return a + b; }, 0) / v.length : null; }); }
+  function weightedKappa(pairs) {
+    var n = pairs.length; if (n < 2) return null;
+    var O = [], ra = [0,0,0,0,0], rb = [0,0,0,0,0], i, j;
+    for (i = 0; i < 5; i++) { O.push([0,0,0,0,0]); }
+    pairs.forEach(function (p) { O[p[0]][p[1]]++; ra[p[0]]++; rb[p[1]]++; });
+    var num = 0, den = 0;
+    for (i = 0; i < 5; i++) for (j = 0; j < 5; j++) { var w = (i - j) * (i - j) / 16; num += w * O[i][j]; den += w * ra[i] * rb[j] / n; }
+    return den > 0 ? 1 - num / den : null;
+  }
+  function comparison() {
+    var d = decodeCode(state.compare.code); if (d.error) return d;
+    var mine = dimScores(state.answers), theirs = dimScores(d.answers), dims = [], pairs = [], gaps = [];
+    mine.forEach(function (m, i) { if (m !== null && theirs[i] !== null) dims.push({ i: i, m: m, t: theirs[i], diff: Math.abs(m - theirs[i]) }); });
+    state.answers.forEach(function (row, di) { row.forEach(function (v, qi) { var w = d.answers[di][qi]; if (v !== null && v !== undefined && w !== null) { pairs.push([v, w]); if (Math.abs(v - w) >= 2) gaps.push({ di: di, qi: qi, m: v, t: w }); } }); });
+    gaps.sort(function (a, b) { return Math.abs(b.m - b.t) - Math.abs(a.m - a.t) || a.di - b.di || a.qi - b.qi; });
+    var mad = dims.length ? dims.reduce(function (a, x) { return a + x.diff; }, 0) / dims.length : null;
+    var near = pairs.filter(function (p) { return Math.abs(p[0] - p[1]) <= 1; }).length;
+    return { dims: dims, pairs: pairs.length, near: near, gaps: gaps, mad: mad, kappa: weightedKappa(pairs), within: dims.filter(function (x) { return x.diff <= 0.5 + 1e-9; }).length };
+  }
+  function paintCompare(c) {
+    var mineEl = $("cmp-mine"); if (!mineEl) return;
+    mineEl.value = encodeCode(state.answers);
+    var out = $("cmp-out"), msg = $("cmp-msg"); out.textContent = ""; msg.textContent = "";
+    if (!state.compare.code) return;
+    var r = comparison();
+    if (r.error) { msg.textContent = r.error; return; }
+    var who = state.compare.name ? state.compare.name : "Them";
+    if (!r.dims.length) { msg.textContent = "No dimension has answers from both of you yet."; return; }
+    var lg = el("div", "cmp-legend");
+    var a = el("span"); a.appendChild(el("i", "dot you")); a.appendChild(document.createTextNode("You")); lg.appendChild(a);
+    var b = el("span"); b.appendChild(el("i", "dot them")); b.appendChild(document.createTextNode(who)); lg.appendChild(b);
+    out.appendChild(lg);
+    r.dims.forEach(function (x) {
+      var d = DIMS[x.i], row = el("div", "db-row"); row.tabIndex = 0;
+      var nm = el("span", "name"); nm.appendChild(el("span", "id", d.id)); nm.appendChild(document.createTextNode(d.name)); row.appendChild(nm);
+      var tr = el("span", "db-track"), lo = Math.min(x.m, x.t), hi = Math.max(x.m, x.t);
+      var ln = el("i", "db-link"); ln.style.left = (lo / 4 * 100) + "%"; ln.style.width = ((hi - lo) / 4 * 100) + "%"; tr.appendChild(ln);
+      var dt = el("i", "dot them"); dt.style.left = (x.t / 4 * 100) + "%"; tr.appendChild(dt);
+      var dy = el("i", "dot you"); dy.style.left = (x.m / 4 * 100) + "%"; tr.appendChild(dy);
+      row.appendChild(tr);
+      row.appendChild(el("span", "val", f1(x.m) + " / " + f1(x.t)));
+      var t = d.id + " " + d.name + "|You " + f2(x.m) + " · " + who + " " + f2(x.t) + "\nDifference " + f2(x.diff);
+      row.setAttribute("data-tip", t); row.setAttribute("aria-label", t.replace("|", ": ").replace(/\n/g, ". "));
+      out.appendChild(row);
+    });
+    var ax = el("div", "axis"); ax.appendChild(el("span")); var tk = el("span", "ticks"); ["0","1","2","3","4"].forEach(function (n) { tk.appendChild(el("span", "", n)); }); ax.appendChild(tk); ax.appendChild(el("span")); out.appendChild(ax);
+    var st = el("div", "cmp-stats");
+    function stat(label, big, note) { var e = el("div", "stat"); e.appendChild(el("span", "label", label)); e.appendChild(el("span", "big", big)); e.appendChild(el("span", "note", note)); st.appendChild(e); }
+    stat("Average gap per dimension", f2(r.mad), r.mad <= 0.5 + 1e-9 ? "Within the 0.5 the framework aims for between two raters (H5)." : "Above the 0.5 the framework aims for between two raters (H5).");
+    stat("Dimensions within 0.5", r.within + " of " + r.dims.length, "How many dimension scores you broadly agree on.");
+    stat("Statements within 1 point", r.near + " of " + r.pairs, r.kappa === null ? "Weighted kappa needs more varied answers." : "Weighted kappa " + f2(r.kappa) + ". Indicative only: 24 statements is a small sample.");
+    out.appendChild(st);
+    var h3 = el("h3", "", r.gaps.length ? "Talk about these first" : "No statement differs by 2 points or more");
+    out.appendChild(h3);
+    if (r.gaps.length) {
+      out.appendChild(el("p", "caption", "Statements where your answers are 2 or more points apart, largest gap first. Ask each other what evidence you had in mind."));
+      var ul = el("ul", "gaps");
+      r.gaps.slice(0, 8).forEach(function (g) {
+        var li = el("li"); li.appendChild(el("span", "mono", DIMS[g.di].id + "(" + (g.qi + 1) + ")"));
+        li.appendChild(el("span", "", DIMS[g.di].q[g.qi]));
+        li.appendChild(el("span", "who", "you " + g.m + " · " + (state.compare.name ? state.compare.name.slice(0, 10) : "them") + " " + g.t));
+        ul.appendChild(li);
+      });
+      out.appendChild(ul);
+      if (r.gaps.length > 8) out.appendChild(el("p", "caption", (r.gaps.length - 8) + " more in the copied summary."));
+    }
+  }
+
   function fitNames() {
     document.querySelectorAll("#pipe .names span").forEach(function (n) { n.classList.remove("off"); if (n.scrollWidth > n.clientWidth + 1) n.classList.add("off"); });
   }
@@ -632,6 +775,15 @@ details.pipe-table table { margin-top: 8px; }
     L.push("");
     L.push("Baseline metrics:");
     if (m.length) m.forEach(function (x) { L.push("  " + x.label + ": " + state.metrics[x.k] + " " + x.unit); }); else L.push("  not recorded");
+    if (state.compare && state.compare.code) {
+      var r = comparison();
+      if (!r.error && r.dims.length) {
+        L.push("");
+        L.push("Compared with " + (state.compare.name || "a second rater") + ": average gap per dimension " + f2(r.mad) + " (H5 aims for 0.5 or less), " + r.within + " of " + r.dims.length + " dimensions within 0.5, " + r.near + " of " + r.pairs + " statements within 1 point" + (r.kappa === null ? "" : ", weighted kappa " + f2(r.kappa)));
+        r.gaps.forEach(function (g) { L.push("  Gap: " + DIMS[g.di].id + "(" + (g.qi + 1) + ") you " + g.m + ", them " + g.t + ": " + DIMS[g.di].q[g.qi]); });
+      }
+    }
+    L.push(""); L.push("Your code: " + encodeCode(state.answers));
     if (c.order.length) {
       L.push("");
       L.push("First moves:");
@@ -654,8 +806,10 @@ details.pipe-table table { margin-top: 8px; }
         return '<tr><td>' + n + '</td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="day-' + i + '" data-stage="' + i + '" aria-label="Elapsed days for ' + n + '" value="' + (state.days[i] === null || state.days[i] === undefined ? '' : state.days[i]) + '"></td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="touch-' + i + '" data-touch="' + i + '" aria-label="Hands-on days for ' + n + '" value="' + (state.touch[i] === null || state.touch[i] === undefined ? '' : state.touch[i]) + '"></td><td><input type="checkbox" id="ai-' + i + '" data-ai="' + i + '" aria-label="AI has sped up ' + n + '"' + (state.ai[i] ? ' checked' : '') + '></td></tr>';
       }).join('') + '</tbody></table></div></section>';
 
-    h += '<section class="card"><h2>3. How true is each statement for your organization?</h2><p class="scale-key">0 not true · 1 rarely · 2 partly · 3 mostly · 4 fully true</p></section>';
-    DIMS.forEach(function (d, di) {
+    h += '<section class="card"><h2>3. How true is each statement for your organization?</h2><p class="scale-key">0 not true · 1 rarely · 2 partly · 3 mostly · 4 fully true</p>' +
+      '<div class="chips" role="radiogroup" aria-label="How to answer"><label><input type="radio" name="amode" value="guided"' + (state.mode === "guided" ? " checked" : "") + '><span>One at a time</span></label><label><input type="radio" name="amode" value="list"' + (state.mode === "list" ? " checked" : "") + '><span>All at once</span></label></div></section>';
+    if (state.mode === "guided") h += '<section class="card guided" id="guided" aria-live="polite"></section>';
+    else DIMS.forEach(function (d, di) {
       h += '<fieldset class="dim"><legend><span class="id">' + d.id + '</span>' + d.name + '</legend><p class="dim-note">' + d.covers + '</p>';
       d.q.forEach(function (q, qi) {
         h += '<div class="stmt"><p>' + q + '</p><div class="scale" role="radiogroup" aria-label="' + q.replace(/"/g, "&quot;") + '">';
@@ -675,7 +829,62 @@ details.pipe-table table { margin-top: 8px; }
       }).join('') + '</div></section>';
 
     $("panel-answer").innerHTML = h;
+    if (state.mode === "guided") paintGuided();
   }
+
+  /* ---------- guided mode ---------- */
+  function answeredCount() { var n = 0; state.answers.forEach(function (d) { d.forEach(function (v) { if (v !== null && v !== undefined) n++; }); }); return n; }
+  function paintGuided(focusScale) {
+    var g = $("guided"); if (!g) return;
+    g.textContent = "";
+    var n = answeredCount();
+    if (state.gi >= 24) {
+      g.appendChild(el("h2", "", n === 24 ? "All 24 statements answered" : n + " of 24 statements answered"));
+      g.appendChild(el("p", "caption", n === 24 ? "Your results are ready. You can still go back and change any answer." : "Unanswered statements leave their dimension score incomplete."));
+      var nav0 = el("div", "btns"), b1 = el("button", "btn primary", "See results"); b1.setAttribute("data-act", "g-results"); nav0.appendChild(b1);
+      var b2 = el("button", "btn", n === 24 ? "Review answers" : "Go to first unanswered"); b2.setAttribute("data-act", n === 24 ? "g-first" : "g-unanswered"); nav0.appendChild(b2);
+      g.appendChild(nav0); return;
+    }
+    var di = Math.floor(state.gi / 3), qi = state.gi % 3, d = DIMS[di], cur = state.answers[di][qi];
+    var meta = el("div", "g-meta");
+    meta.appendChild(el("span", "eyebrow", d.id + " " + d.name + " · " + (qi + 1) + " of 3"));
+    meta.appendChild(el("span", "eyebrow", "Statement " + (state.gi + 1) + " of 24 · " + n + " answered"));
+    g.appendChild(meta);
+    var dots = el("div", "g-dots"); dots.setAttribute("aria-hidden", "true");
+    for (var k = 0; k < 24; k++) { var a = state.answers[Math.floor(k / 3)][k % 3]; dots.appendChild(el("i", (a !== null && a !== undefined ? "on" : "") + (k === state.gi ? " cur" : ""))); }
+    g.appendChild(dots);
+    var stmt = el("p", "g-stmt", d.q[qi]); stmt.id = "g-stmt"; g.appendChild(stmt);
+    var sc = el("div", "g-scale"); sc.setAttribute("role", "radiogroup"); sc.setAttribute("aria-labelledby", "g-stmt");
+    for (var v = 0; v < 5; v++) {
+      var bt = el("button"); bt.type = "button"; bt.setAttribute("role", "radio"); bt.setAttribute("aria-checked", String(cur === v)); bt.setAttribute("data-g", String(v));
+      bt.tabIndex = (cur === v || (cur === null || cur === undefined) && v === 0) ? 0 : -1;
+      bt.appendChild(el("b", "", String(v))); bt.appendChild(el("span", "", SCALE[v])); sc.appendChild(bt);
+    }
+    g.appendChild(sc);
+    var det = el("details"); det.appendChild(el("summary", "caption", "What counts as evidence")); det.appendChild(el("p", "caption", d.ev)); g.appendChild(det);
+    var nav = el("div", "g-nav"), left = el("div", "btns"), right = el("div", "btns");
+    var back = el("button", "btn", "← Back"); back.setAttribute("data-act", "g-back"); back.disabled = state.gi === 0; left.appendChild(back);
+    var skip = el("button", "btn", cur === null || cur === undefined ? "Skip →" : "Next →"); skip.setAttribute("data-act", "g-next"); left.appendChild(skip);
+    right.appendChild(el("span", "caption", "Keys 0–4 answer · ← → move"));
+    nav.appendChild(left); nav.appendChild(right); g.appendChild(nav);
+    if (focusScale) { var f = sc.querySelector('[tabindex="0"]'); if (f) f.focus({ preventScroll: true }); }
+  }
+  function guidedAnswer(v) {
+    var di = Math.floor(state.gi / 3), qi = state.gi % 3;
+    state.answers[di][qi] = v;
+    state.gi = Math.min(24, state.gi + 1);
+    touched();
+    paintGuided(true);
+  }
+  function guidedMove(step) { state.gi = Math.min(24, Math.max(0, state.gi + step)); save(); paintGuided(true); }
+  document.addEventListener("keydown", function (e) {
+    if (state.mode !== "guided" || $("panel-answer").hidden || !$("guided") || state.gi >= 24) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select" || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (/^[0-4]$/.test(e.key)) { e.preventDefault(); guidedAnswer(+e.key); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); guidedMove(1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); guidedMove(-1); }
+  });
 
   /* ---------- progress, tabs, tooltip ---------- */
   function updateProgress(c) {
@@ -718,6 +927,14 @@ details.pipe-table table { margin-top: 8px; }
     if (t.getAttribute("data-tab")) { showTab(t.getAttribute("data-tab")); return; }
     var act = t.getAttribute("data-act");
     if (act === "fresh") { state = blankState(); save(); renderAnswer(); refresh(); }
+    else if (t.hasAttribute("data-g")) { guidedAnswer(+t.getAttribute("data-g")); }
+    else if (act === "g-back") { guidedMove(-1); }
+    else if (act === "g-next") { guidedMove(1); }
+    else if (act === "g-first") { state.gi = 0; save(); paintGuided(true); }
+    else if (act === "g-unanswered") { var k = 0; for (; k < 24; k++) { var av = state.answers[Math.floor(k / 3)][k % 3]; if (av === null || av === undefined) break; } state.gi = k; save(); paintGuided(true); }
+    else if (act === "g-results") { showTab("results"); window.scrollTo(0, 0); }
+    else if (act === "copy-code") { var cm = $("cmp-mine"), mg = $("cmp-msg"); try { navigator.clipboard.writeText(cm.value).then(function () { mg.textContent = "Code copied."; }, function () { cm.select(); mg.textContent = "Selected. Press Ctrl+C or Cmd+C to copy."; }); } catch (err) { cm.select(); mg.textContent = "Selected. Press Ctrl+C or Cmd+C to copy."; } }
+    else if (act === "clear-cmp") { state.compare = { code: "", name: "" }; save(); refresh(); }
     else if (act === "try-work") { state.sp = { stage: 2, factor: 10, cut: 0 }; save(); refresh(); }
     else if (act === "try-wait") { var cc = compute(); if (cc.longest >= 0) { state.sp = { stage: cc.longest, factor: 1, cut: 50 }; save(); refresh(); } }
     else if (act === "example") { state = sampleState(); save(); renderAnswer(); refresh(); }
@@ -735,10 +952,12 @@ details.pipe-table table { margin-top: 8px; }
     if (t.name === "goal") { state.goal = t.value; touched(); }
     else if (t.getAttribute("data-d") !== null && t.type === "radio") { state.answers[+t.getAttribute("data-d")][+t.getAttribute("data-q")] = +t.value; touched(); }
     else if (t.getAttribute("data-ai") !== null) { state.ai[+t.getAttribute("data-ai")] = t.checked; touched(); }
+    else if (t.name === "amode") { state.mode = t.value; save(); renderAnswer(); }
     else if (t.name === "sp-stage") { state.sp.stage = +t.value; save(); repaint(); }
   });
   document.addEventListener("input", function (e) {
     var t = e.target;
+    if (t.id === "cmp-theirs" || t.id === "cmp-name") { state.compare[t.id === "cmp-theirs" ? "code" : "name"] = t.value.trim(); save(); var cc2 = compute(); paintCompare(cc2); var gl = GOALS.filter(function (g) { return g.k === state.goal; })[0] || GOALS[0]; $("summary").value = summaryText(cc2, gl, cc2.order.length ? DIMS[cc2.order[0].i] : null); return; }
     if (t.id === "sp-factor") { state.sp.factor = +t.value; save(); repaint(); return; }
     if (t.id === "sp-cut") { state.sp.cut = +t.value; save(); repaint(); return; }
     if (t.getAttribute("data-stage") !== null) { state.days[+t.getAttribute("data-stage")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }

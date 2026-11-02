@@ -10,6 +10,18 @@
 - Chart colours were checked for contrast and colour-blind separation in light and dark mode.
 - The spec gains the waiting term in the speedup formula. It is for exploring only and changes no score, level or tier.
 
+### Compare with a colleague
+
+- Each result has a short code (`ABSORB1-` plus 24 ratings and a check character). Paste a colleague's code to see both raters' dimension scores side by side, with agreement shown as a ring around the dot.
+- Reports the average gap per dimension against the 0.5 aim in H5, how many statements agree within 1 point, a weighted kappa (marked indicative), and the statements where the two differ by 2 points or more, under "Talk about these first".
+- Codes hold only the ratings. A mistyped code is caught by the check character. The comparison is included in the copied summary.
+
+### Guided mode
+
+- Answer one statement at a time, with large 0–4 buttons, keys 0–4 to answer and arrow keys to move, a progress strip, and "What counts as evidence" for each dimension. "All at once" keeps the original list. A fresh start opens in guided mode; the example opens in the list.
+
+No change to the statements, scoring, level rule or tier thresholds.
+
 ## 0.1.1 (2026-11-02)
 
 Version DOI [10.5281/zenodo.23896316](https://doi.org/10.5281/zenodo.23896316). Bug fixes to the assessment page. No change to the framework, scoring or wording.
