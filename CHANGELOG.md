@@ -2,6 +2,8 @@
 
 ## 0.2.0 (2026-11-02)
 
+Version DOI [10.5281/zenodo.23898389](https://doi.org/10.5281/zenodo.23898389).
+
 ### Pipeline view
 
 - The "Where a change waits" chart is now a pipeline view. Each stage is a block sized by elapsed days and split into hands-on time (solid) and waiting (light). The constraint is amber, the stage being changed is teal, and other stages are grey. Two rows, today and what-if, share one scale, so the effect of a change shows as a shorter path.
