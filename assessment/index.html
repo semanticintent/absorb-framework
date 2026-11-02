@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ABSORB Assessment</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: one column workbench. Header with progress, two tabs (Results first, Answer second), results read top-down: headline stats, dimension scores, stage timing, autonomy tiers, first moves, copyable summary. */
 :root {
@@ -30,6 +33,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -147,7 +151,7 @@ td input[type="number"] { max-width: 110px; }
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline · draft v0.1</p>
+    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline · v0.1.1 draft</p>
     <h1>ABSORB Assessment</h1>
     <p class="lead">Rate how ready your delivery system is to absorb AI-driven development speed. Answer 24 statements, enter how long a change waits at each stage, and add baseline metrics if you have them.</p>
     <div class="progress" aria-live="polite">

@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.1 (2026-11-02)
+
+Bug fixes to the assessment page. No change to the framework, scoring or wording.
+
+- The Answer panel always showed below Results, because a display rule overrode the `hidden` attribute. The Results and Answer tabs now switch.
+- Added `<!DOCTYPE html>` and a UTF-8 character encoding. Without them Safari showed "×" and "·" as garbled characters, and browsers rendered the page in quirks mode.
+- Removed a leftover meta tag from the drafting tool.
+
+## 0.1.0 (2026-11-02)
 
 ### 2026-11-02: review pass before first release
 

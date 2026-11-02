@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use ABSORB, please cite it using the metadata below."
 title: "ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline"
-version: "0.1.0"
+version: "0.1.1"
 type: software
 authors:
   - family-names: "Shatny"
