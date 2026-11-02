@@ -10,13 +10,15 @@
 - Chart colours were checked for contrast and colour-blind separation in light and dark mode.
 - The spec gains the waiting term in the speedup formula. It is for exploring only and changes no score, level or tier.
 
-### Fixes (also affect the released v0.1.0 page)
+## 0.1.1 (2026-11-02)
 
-- The Answer panel showed below Results at all times, because a display rule overrode the `hidden` attribute. Tabs now switch.
-- The page had no `<!DOCTYPE html>` or character encoding. Safari showed "×" and "·" as garbled characters.
-- Removed a leftover claude.ai meta tag.
+Version DOI [10.5281/zenodo.23896316](https://doi.org/10.5281/zenodo.23896316). Bug fixes to the assessment page. No change to the framework, scoring or wording.
 
-## 0.1.0 (unreleased)
+- The Answer panel always showed below Results, because a display rule overrode the `hidden` attribute. The Results and Answer tabs now switch.
+- Added `<!DOCTYPE html>` and a UTF-8 character encoding. Without them Safari showed "×" and "·" as garbled characters, and browsers rendered the page in quirks mode.
+- Removed a leftover meta tag from the drafting tool.
+
+## 0.1.0 (2026-11-02)
 
 ### 2026-11-02: review pass before first release
 
