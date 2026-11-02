@@ -1,6 +1,5 @@
 <title>ABSORB Assessment</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Layout: one column workbench. Header with progress, two tabs (Results first, Answer second), results read top-down: headline stats, dimension scores, stage timing, autonomy tiers, first moves, copyable summary. */
 :root {
@@ -15,8 +14,8 @@
   --warn: #B24F08;
   --warn-soft: #F8E6D8;
   --track: #E4EAED;
-  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -148,7 +147,7 @@ td input[type="number"] { max-width: 110px; }
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline</p>
+    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline · draft v0.1</p>
     <h1>ABSORB Assessment</h1>
     <p class="lead">Rate how ready your delivery system is to absorb AI-driven development speed. Answer 24 statements, enter how long a change waits at each stage, and add baseline metrics if you have them.</p>
     <div class="progress" aria-live="polite">
@@ -166,6 +165,7 @@ td input[type="number"] { max-width: 110px; }
   <div id="panel-answer" class="panel" role="tabpanel" aria-labelledby="tab-answer" hidden></div>
 </div>
 <div id="tip" role="tooltip" hidden></div>
+<footer class="wrap caption" style="padding-top:0">ABSORB is a proposed framework, not a validated standard. Levels, tiers and thresholds are proposals to be tested. Your answers are stored only in this browser; the page makes no network requests.</footer>
 
 <script>
 (function () {
@@ -182,7 +182,7 @@ td input[type="number"] { max-width: 110px; }
               "Automate or batch approval and release steps that wait for people, and agree waiting-time targets for each stage."] },
     { id: "D2", name: "Verification and evidence", covers: "Tests, independent checks, AI review, and proof that a change is safe.",
       q: ["Automated tests give us enough confidence to ship routine changes.",
-          "Checks are independent of the AI that wrote the code, and humans audit a sample of approvals.",
+          "Changes are checked by tests or reviewers that are independent of the AI that wrote them.",
           "We track escaped defects and use them to improve tests and review."],
       moves: ["Put an AI review on every change through a different path from the author agent, and audit a sample of approved changes each week.",
               "Log every escaped defect with the check that should have caught it, and add that check."] },
@@ -205,7 +205,7 @@ td input[type="number"] { max-width: 110px; }
       moves: ["Measure CI queue time and rollback time this week and fix the slower of the two first.",
               "Write the repository conventions and context agents need into versioned files, and add preview environments."] },
     { id: "D6", name: "Accountability and ownership", covers: "Named humans for services and for release decisions.",
-      q: ["Every service has a named owner and an on-call rota.",
+      q: ["Every service has a named owner.",
           "A named person approves production releases for each service.",
           "Incidents involving AI-written changes have a clear review process."],
       moves: ["Publish an ownership map and name a release approver for every service.",
@@ -213,12 +213,12 @@ td input[type="number"] { max-width: 110px; }
     { id: "D7", name: "Measurement", covers: "Outcome metrics rather than activity metrics.",
       q: ["We measure outcomes such as lead time, reverts and production incidents.",
           "We do not treat PR counts or the share of AI-written code as success measures.",
-          "Metrics are reviewed on a schedule and change decisions."],
+          "Reviews of these metrics regularly change decisions."],
       moves: ["Replace PR-count dashboards with lead time, review wait, revert rate and incidents per change.",
               "Review the metrics monthly with the people who own the stages."] },
     { id: "D8", name: "People and change", covers: "Skills, roles, junior pipeline, incentives and training.",
       q: ["Reviewers' workload is sustainable at the current volume of changes.",
-          "People have training and time to work with AI tools, and roles reflect the new work.",
+          "People have training and time to learn to work with AI tools.",
           "Junior engineers have a path to build judgment."],
       moves: ["Measure reviewer load and cap it, then move the capacity toward review and specification work.",
               "Give juniors review and specification tasks with a mentor so judgment still develops."] }
@@ -238,7 +238,7 @@ td input[type="number"] { max-width: 110px; }
     { t: "T0 Low risk", ex: "Docs, test-only changes, internal tooling", human: "None beyond AI review", ready: 2, cond: 1.5 },
     { t: "T1 Standard", ex: "Routine features in well-tested services", human: "One human, who may be the author", ready: 2.5, cond: 2 },
     { t: "T2 Elevated", ex: "Shared libraries, migrations, authentication, payments", human: "Named owner plus a second reviewer", ready: 3, cond: 2.5 },
-    { t: "T3 Critical", ex: "Safety-critical, regulated, security-sensitive", human: "Explicit sign-off or change board, always", ready: 3.5, cond: 3 }
+    { t: "T3 Critical", ex: "Safety-critical, regulated, security-sensitive", human: "Explicit sign-off or change board, always", ready: 3.5, cond: 3, signoff: true }
   ];
 
   var GOALS = [
@@ -264,19 +264,20 @@ td input[type="number"] { max-width: 110px; }
     return {
       sample: true, goal: "output",
       answers: [[2,1,1],[2,2,2],[2,1,2],[2,2,1],[3,2,2],[3,2,2],[1,2,1],[2,2,1]],
-      days: [3, 4, 2, 5, 3, 6, 9], ai: [false, false, true, false, false, false, false],
+      days: [3, 4, 2, 5, 3, 6, 9], touch: [0.5, 1, 1.5, 0.5, 1, 0.5, 1], ai: [false, false, true, false, false, false, false],
       sp: { stage: 2, factor: 3 }, metrics: {}
     };
   }
   function blankState() {
     var a = []; for (var i = 0; i < DIMS.length; i++) a.push([null, null, null]);
     return { sample: false, goal: "output", answers: a, days: STAGES.map(function () { return null; }),
-      ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3 }, metrics: {} };
+      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3 }, metrics: {} };
   }
 
   var state;
   try { var raw = localStorage.getItem(KEY); state = raw ? JSON.parse(raw) : null; } catch (e) { state = null; }
   if (!state || !state.answers || state.answers.length !== DIMS.length) state = sampleState();
+  if (!state.touch || state.touch.length !== STAGES.length) state.touch = STAGES.map(function () { return null; });
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
   function $(id) { return document.getElementById(id); }
@@ -311,8 +312,13 @@ td input[type="number"] { max-width: 110px; }
       var best = -1;
       state.days.forEach(function (d, i) { if (d > 0 && !state.ai[i] && d > best) { best = d; c.longest = i; } });
     }
+    // Amdahl check. Only hands-on time gets faster; waiting stays.
+    // With no hands-on time entered, all elapsed time counts as work, which gives an upper bound.
     var sd = state.days[state.sp.stage] > 0 ? state.days[state.sp.stage] : 0;
-    c.speedup = total > 0 ? 1 / ((1 - sd / total) + (sd / total) / state.sp.factor) : null;
+    var st = state.touch[state.sp.stage];
+    c.spUpper = !(st >= 0 && st !== null && st !== "");
+    var work = c.spUpper ? sd : Math.min(st, sd);
+    c.speedup = total > 0 ? total / (total - work + work / state.sp.factor) : null;
     return c;
   }
 
@@ -361,7 +367,8 @@ td input[type="number"] { max-width: 110px; }
       STAGES.forEach(function (n, i) {
         var d = state.days[i] > 0 ? state.days[i] : 0;
         var isL = i === c.longest;
-        var tip = n + "|" + d + " of " + c.total + " days (" + Math.round(d / c.total * 100) + "%)" + (state.ai[i] ? "\nAI has sped this stage up." : "");
+        var tc = state.touch[i];
+        var tip = n + "|" + d + " of " + c.total + " days (" + Math.round(d / c.total * 100) + "%)" + (tc !== null && tc !== undefined && tc !== "" ? "\nHands-on " + Math.min(tc, d) + ", waiting " + Math.max(0, d - tc) + " days" : "") + (state.ai[i] ? "\nAI has sped this stage up." : "");
         h += '<div class="row" role="listitem" tabindex="0" data-tip="' + tip.replace(/"/g, "&quot;") + '">' +
           '<span class="name">' + n + (isL ? ' <span class="tag warn">Longest wait</span>' : '') + (state.ai[i] ? ' <span class="tag">AI-sped</span>' : '') + '</span>' +
           '<span class="track"><span class="fill' + (isL ? ' warn' : state.ai[i] ? ' soft' : '') + '" style="width:' + (mx ? d / mx * 100 : 0) + '%"></span></span>' +
@@ -370,7 +377,8 @@ td input[type="number"] { max-width: 110px; }
       h += '</div><p class="caption">Total ' + c.total + ' days. Bars are scaled to the longest stage.</p>';
       h += '<div class="inline"><span>If</span><select id="sp-stage" aria-label="Stage to speed up">' + STAGES.map(function (n, i) { return '<option value="' + i + '"' + (i === state.sp.stage ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
         '</select><span>became</span><select id="sp-factor" aria-label="Speedup factor">' + [2, 3, 5, 10].map(function (x) { return '<option value="' + x + '"' + (x === state.sp.factor ? ' selected' : '') + '>' + x + 'x</option>'; }).join('') +
-        '</select><span>faster, the whole path would be <b class="mono">' + f2(c.speedup) + 'x</b> faster.</span></div>';
+        '</select><span>faster, the whole path would be <b class="mono">' + (c.spUpper ? 'at most ' : '') + f2(c.speedup) + 'x</b> faster.</span></div>' +
+        '<p class="caption">' + (c.spUpper ? 'Upper bound: no hands-on time is entered for this stage, so all of its elapsed time is treated as work. Waiting does not get faster when the work does.' : 'Only the hands-on part of the stage is sped up; its waiting time stays the same.') + '</p>';
     } else {
       h += '<p class="caption">Enter elapsed days for each stage on the Answer tab to see where work waits.</p>';
     }
@@ -380,10 +388,10 @@ td input[type="number"] { max-width: 110px; }
     h += '<section class="card"><h2>Autonomy tiers</h2>';
     if (c.complete) {
       h += '<p class="sub">Whether agent-driven change is safe at each tier, based on the autonomy floor of ' + f1(c.floor) + '. Thresholds are illustrative. Conditional means extra evidence or monitoring is needed first.</p>';
-      h += '<div class="scroll"><table><thead><tr><th>Tier</th><th>Example changes</th><th>Human involvement</th><th>Agent-driven</th></tr></thead><tbody>';
+      h += '<div class="scroll"><table><thead><tr><th>Tier</th><th>Example changes</th><th>Human involvement</th><th>Agent-driven change</th></tr></thead><tbody>';
       TIERS.forEach(function (t) {
         var st = tierStatus(t, c.floor);
-        h += '<tr><td><b>' + t.t + '</b></td><td>' + t.ex + '</td><td>' + t.human + '</td><td><span class="pill ' + st[1] + '">' + st[2] + ' ' + st[0] + '</span></td></tr>';
+        h += '<tr><td><b>' + t.t + '</b></td><td>' + t.ex + '</td><td>' + t.human + '</td><td><span class="pill ' + st[1] + '">' + st[2] + ' ' + st[0] + '</span>' + (t.signoff ? '<br><span class="caption">Sign-off is still required</span>' : '') + '</td></tr>';
       });
       h += '</tbody></table></div>';
     } else {
@@ -422,13 +430,14 @@ td input[type="number"] { max-width: 110px; }
     if (c.total > 0) {
       L.push("");
       L.push("Elapsed days per stage (total " + c.total + "):");
-      STAGES.forEach(function (n, i) { L.push("  " + n + ": " + (state.days[i] > 0 ? state.days[i] : 0) + (state.ai[i] ? " (AI-sped)" : "")); });
+      STAGES.forEach(function (n, i) { var tc = state.touch[i]; L.push("  " + n + ": " + (state.days[i] > 0 ? state.days[i] : 0) + (tc !== null && tc !== undefined && tc !== "" ? " (hands-on " + tc + ")" : "") + (state.ai[i] ? " (AI-sped)" : "")); });
+      L.push("Speedup check: " + STAGES[state.sp.stage] + " " + state.sp.factor + "x faster gives " + (c.spUpper ? "at most " : "") + f2(c.speedup) + "x on the whole path");
       if (c.longest >= 0) L.push("Longest stage not yet sped up by AI: " + STAGES[c.longest]);
     }
     if (c.complete) {
       L.push("");
       L.push("Autonomy floor: " + f1(c.floor) + " of 4");
-      TIERS.forEach(function (t) { L.push("  " + t.t + ": " + tierStatus(t, c.floor)[0]); });
+      TIERS.forEach(function (t) { L.push("  " + t.t + ": " + tierStatus(t, c.floor)[0] + (t.signoff ? " (sign-off still required)" : "")); });
     }
     var m = METRICS.filter(function (x) { return state.metrics[x.k] !== undefined && state.metrics[x.k] !== null && state.metrics[x.k] !== ""; });
     L.push("");
@@ -451,9 +460,9 @@ td input[type="number"] { max-width: 110px; }
     h += '<section class="card"><h2>1. What do you want from the extra speed?</h2><p class="sub">The goal changes how the results are read, not the scores.</p><div class="chips" role="radiogroup" aria-label="Goal">' +
       GOALS.map(function (g) { return '<label><input type="radio" name="goal" value="' + g.k + '"' + (state.goal === g.k ? ' checked' : '') + '><span>' + g.label + '</span></label>'; }).join('') + '</div></section>';
 
-    h += '<section class="card"><h2>2. How long does a change wait at each stage?</h2><p class="sub">Typical elapsed days from request to customer use, including waiting. Tick the stages where AI has already sped things up.</p><div class="scroll"><table><thead><tr><th>Stage</th><th>Elapsed days</th><th>AI has sped this up</th></tr></thead><tbody>' +
+    h += '<section class="card"><h2>2. How long does a change wait at each stage?</h2><p class="sub">Typical elapsed days from request to customer use, including waiting. Hands-on days is the part spent working rather than waiting; it is optional but makes the speedup check honest. Tick the stages where AI has already sped things up.</p><div class="scroll"><table><thead><tr><th>Stage</th><th>Elapsed days</th><th>Hands-on days</th><th>AI has sped this up</th></tr></thead><tbody>' +
       STAGES.map(function (n, i) {
-        return '<tr><td>' + n + '</td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="day-' + i + '" data-stage="' + i + '" aria-label="Elapsed days for ' + n + '" value="' + (state.days[i] === null || state.days[i] === undefined ? '' : state.days[i]) + '"></td><td><input type="checkbox" id="ai-' + i + '" data-ai="' + i + '" aria-label="AI has sped up ' + n + '"' + (state.ai[i] ? ' checked' : '') + '></td></tr>';
+        return '<tr><td>' + n + '</td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="day-' + i + '" data-stage="' + i + '" aria-label="Elapsed days for ' + n + '" value="' + (state.days[i] === null || state.days[i] === undefined ? '' : state.days[i]) + '"></td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="touch-' + i + '" data-touch="' + i + '" aria-label="Hands-on days for ' + n + '" value="' + (state.touch[i] === null || state.touch[i] === undefined ? '' : state.touch[i]) + '"></td><td><input type="checkbox" id="ai-' + i + '" data-ai="' + i + '" aria-label="AI has sped up ' + n + '"' + (state.ai[i] ? ' checked' : '') + '></td></tr>';
       }).join('') + '</tbody></table></div></section>';
 
     h += '<section class="card"><h2>3. How true is each statement for your organization?</h2><p class="scale-key">0 not true · 1 rarely · 2 partly · 3 mostly · 4 fully true</p></section>';
@@ -541,6 +550,7 @@ td input[type="number"] { max-width: 110px; }
   document.addEventListener("input", function (e) {
     var t = e.target;
     if (t.getAttribute("data-stage") !== null) { state.days[+t.getAttribute("data-stage")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }
+    else if (t.getAttribute("data-touch") !== null) { state.touch[+t.getAttribute("data-touch")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }
     else if (t.getAttribute("data-metric") !== null) { state.metrics[t.getAttribute("data-metric")] = t.value; touched(); }
   });
 
