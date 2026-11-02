@@ -12,7 +12,7 @@ Two or three sentences: who used ABSORB, what they wanted, what the binding cons
 | --- | --- |
 | Organization type and size | (for example, 40-person product team in a regulated industry) |
 | Team assessed | (size, stack, release cadence) |
-| Framework version | (for example, v0.1) |
+| Framework version | (for example, v0.1, and the commit or release tag) |
 | Assessment date | |
 | Assessor | (self-assessment or external) |
 | AI tooling in use before | |
@@ -23,15 +23,17 @@ More output, lower cost, lower risk, or a mix. Who decided, and what target mult
 
 ## Stage timing (step 2)
 
-| Stage | Elapsed days | AI-sped before? |
-| --- | --- | --- |
-| Prioritize | | |
-| Specify | | |
-| Build | | |
-| Review | | |
-| Test | | |
-| Approve and release | | |
-| Adopt and roll out | | |
+Hands-on days is the part of the stage spent working rather than waiting. Leave it blank if unknown; the speedup estimate is then an upper bound.
+
+| Stage | Elapsed days | Hands-on days | AI-sped before? |
+| --- | --- | --- | --- |
+| Prioritize | | | |
+| Specify | | | |
+| Build | | | |
+| Review | | | |
+| Test | | | |
+| Approve and release | | | |
+| Adopt and roll out | | | |
 
 Longest stage not yet sped up:
 

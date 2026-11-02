@@ -1,6 +1,6 @@
 # ABSORB validation plan
 
-Version 0.1 (draft), 2026-10-26. **ABSORB is a proposed framework. Nothing here has been run.** This file states in advance what would count as evidence for or against it, so the framework can be wrong in public.
+Version 0.1 (draft), 2026-10-26, revised 2026-11-02. **ABSORB is a proposed framework. Nothing here has been run.** This file states in advance what would count as evidence for or against it, so the framework can be wrong in public.
 
 ## Purpose and rules
 
@@ -24,6 +24,12 @@ Version 0.1 (draft), 2026-10-26. **ABSORB is a proposed framework. Nothing here 
 | H8 | **Absorption ratio (proposed, not yet in the spec).** At gate stages where arrivals divided by clearing capacity exceed about 0.8, waits grow disproportionately. | Per-stage arrival rate, capacity, and wait time | Waits show no steep rise as the ratio approaches 1 |
 
 H8 depends on adding the ratio to `SPEC.md` and the assessment page. Until then it stays a candidate.
+
+**Measurement notes** (these clarify how a hypothesis is measured; they do not change any hypothesis or threshold):
+
+- **H2** uses hands-on time where the team entered it. Estimates made from elapsed time alone are upper bounds, so they are reported separately and not pooled with the others. Pooling them would bias the error in one direction.
+- **H5 and H6** depend on each statement asking one thing. Four double statements were split or narrowed before any data was collected (see the calibration log).
+- **H1** compares against the longest measured *wait*. Where hands-on time is entered, wait = elapsed minus hands-on.
 
 ## Studies, cheapest first
 
@@ -91,6 +97,8 @@ For each study, publish:
 | Date | Change | Reason and evidence |
 | --- | --- | --- |
 | 2026-10-26 | Initial plan | Thresholds are starting values, not findings |
+| 2026-11-02 | Statements D2(2), D6(1), D7(3), D8(2) reworded to ask one thing each | Double statements make inter-rater agreement (H5) and dimension clustering (H6) harder to read. Done before any data collection, as rule 4 allows. No threshold or level rule changed |
+| 2026-11-02 | Optional hands-on time added to stage timing; the speedup check applies only to hands-on time | Elapsed time includes waiting, which a faster stage does not shorten, so the old check overstated the speedup. This changes how H2 is measured, not its threshold |
 
 ## Notes on alignment with the author's other records
 

@@ -88,7 +88,7 @@ Across both waves the durable position went to people who understood one concret
 
 Opened on 2026-10-30:
 
-- Paul A. David, "The Dynamo and the Computer: An Historical Perspective on the Modern Productivity Paradox," *AEA Papers and Proceedings*, vol. 80, no. 2, May 1990, pp. 355–361. [Copy via gwern.net](https://Www.Gwern.net/doc/economics/automation/1990-david.pdf); [AcaWiki summary](https://acawiki.org/The_dynamo_and_the_computer:_an_historical_perspective_on_the_modern_productivity_paradox)
+- Paul A. David, "The Dynamo and the Computer: An Historical Perspective on the Modern Productivity Paradox," *AEA Papers and Proceedings*, vol. 80, no. 2, May 1990, pp. 355–361. [Copy via gwern.net](https://gwern.net/doc/economics/automation/1990-david.pdf); [AcaWiki summary](https://acawiki.org/The_dynamo_and_the_computer:_an_historical_perspective_on_the_modern_productivity_paradox)
 - [Paul David interview, History News Network](https://www.historynewsnetwork.org/article/paul-david-it-took-decades-for-the-economic-impact)
 - [UL (safety organization), Wikipedia](https://en.wikipedia.org/wiki/UL_(safety_organization))
 - [125 and counting: the history behind the establishment of the NEC, EC&M](https://www.ecmag.com/section/codes-standards/125-and-counting-important-history-behind-establishment-nec)
