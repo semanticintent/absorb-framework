@@ -4,7 +4,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23895787.svg)](https://doi.org/10.5281/zenodo.23895787)
 
-> **Status: draft v0.1. A proposed framework, not a validated standard.** Scoring thresholds and maturity levels are proposals. See [Status and limitations](#status-and-limitations).
+> **Status: draft v0.2. A proposed framework, not a validated standard.** Scoring thresholds and maturity levels are proposals. See [Status and limitations](#status-and-limitations).
 
 AI has made code cheap to produce. It has not made software cheap to deliver, because delivery also needs deciding, specifying, verifying, releasing and adopting. ABSORB is a diagnostic for one question: **can this organization turn faster AI-driven coding into faster, safer delivery?**
 
@@ -38,9 +38,10 @@ The first line is not new. DORA's 2025 report calls AI an amplifier of an organi
 
 1. Read the "At a glance" section at the top of [`SPEC.md`](SPEC.md).
 2. Open `assessment/index.html` in a browser. It loads example answers so you can see the output; choose "Start fresh" to enter your own.
-3. Pick a goal, enter the elapsed days a typical change spends at each stage (and the hands-on part, if you know it), rate 24 statements from 0 to 4, and optionally record baseline metrics.
-4. Read the results: readiness level, weakest dimension, where work waits, which autonomy tiers are ready, and first moves.
-5. Fix the binding constraint first, then re-assess.
+3. Pick a goal, enter the elapsed days a typical change spends at each stage (and the hands-on part, if you know it), rate 24 statements from 0 to 4 (one at a time, or all at once), and optionally record baseline metrics.
+4. Read the results: readiness level, weakest dimension, where work waits (try the work and waiting sliders), which autonomy tiers are ready, and first moves.
+5. Optionally, have a colleague score the same team and paste their code to see where you disagree.
+6. Write a decision record with a prediction, save a snapshot, fix the binding constraint, then re-assess and check the prediction.
 
 ## The eight dimensions
 
@@ -55,7 +56,7 @@ D1 Flow and constraints, D2 Verification and evidence, D3 Risk-tiered governance
 
 ## How to cite
 
-Shatny, M. (2026). *ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline* (Version 0.1.1) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23895787
+Shatny, M. (2026). *ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline* (Version 0.2.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23895787
 
 The DOI above always points to the latest version. To cite one version exactly, use v0.1.1 [10.5281/zenodo.23896316](https://doi.org/10.5281/zenodo.23896316) or v0.1.0 [10.5281/zenodo.23895788](https://doi.org/10.5281/zenodo.23895788). Metadata is in [`CITATION.cff`](CITATION.cff).
 

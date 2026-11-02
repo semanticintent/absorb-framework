@@ -30,6 +30,7 @@ H8 depends on adding the ratio to `SPEC.md` and the assessment page. Until then 
 - **H2** uses hands-on time where the team entered it. Estimates made from elapsed time alone are upper bounds, so they are reported separately and not pooled with the others. Pooling them would bias the error in one direction.
 - **H5 and H6** depend on each statement asking one thing. Four double statements were split or narrowed before any data was collected (see the calibration log).
 - **H5** can be collected with the assessment page itself: each rater copies a result code, and the comparison reports the dimension-level mean absolute difference and a quadratic-weighted kappa on the 24 statements. With one pair of raters, kappa on 24 items is indicative only; pool pairs across teams for the test.
+- **H4** can be collected with the decision record: the snapshot stores the constraint stage and timings, and after the timings are re-entered the record reports whether the constraint moved.
 - **H1** compares against the longest measured *wait*. Where hands-on time is entered, wait = elapsed minus hands-on.
 
 ## Studies, cheapest first

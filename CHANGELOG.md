@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (v0.2 in progress)
+## 0.2.0 (2026-11-02)
 
 ### Pipeline view
 
@@ -15,6 +15,11 @@
 - Each result has a short code (`ABSORB1-` plus 24 ratings and a check character). Paste a colleague's code to see both raters' dimension scores side by side, with agreement shown as a ring around the dot.
 - Reports the average gap per dimension against the 0.5 aim in H5, how many statements agree within 1 point, a weighted kappa (marked indicative), and the statements where the two differ by 2 points or more, under "Talk about these first".
 - Codes hold only the ratings. A mistyped code is caught by the check character. The comparison is included in the copied summary.
+
+### Decision record
+
+- State the constraint you believe in, the change you will make, and a prediction on one baseline metric (from, to, by a date). Save a snapshot of today's constraint, level and scores.
+- At the next assessment, enter the actual value: the record says whether the prediction was met, partly met or not met, whether the constraint moved since the snapshot (H4), and which dimension scores changed. Included in the copied summary.
 
 ### Guided mode
 

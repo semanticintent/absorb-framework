@@ -126,7 +126,7 @@ fieldset.dim legend .id { font-family: var(--font-mono); font-size: 12px; color:
 .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 16px; }
 .field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 .field span.hint { color: var(--muted); font-size: 12px; }
-input[type="number"], input[type="text"], input:not([type]), select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; min-width: 0; }
+input[type="number"], input[type="text"], input[type="date"], input:not([type]), select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; min-width: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips label { position: relative; }
 .chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -209,6 +209,16 @@ td input[type="number"] { max-width: 110px; }
 .gaps { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .gaps li { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 10px; font-size: 14px; align-items: baseline; }
 .gaps .who { font-family: var(--font-mono); font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+/* decision record */
+.dec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.dec-grid .wide { grid-column: 1 / -1; }
+.dec-grid textarea { min-height: 72px; font-family: var(--font-sans); font-size: 14px; }
+.dec-pred { display: flex; flex-wrap: wrap; align-items: start; gap: 10px; }
+.dec-pred select, .dec-pred input { height: 38px; }
+.dec-pred .field { flex: 1 1 140px; }
+.dec-out { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.verdict { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.verdict .ic { font-family: var(--font-mono); }
 /* guided mode */
 .guided { gap: 18px; }
 .g-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; }
@@ -243,7 +253,7 @@ details.pipe-table table { margin-top: 8px; }
 
 <div class="wrap">
   <header>
-    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline · v0.2 in development</p>
+    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline · v0.2.0 draft</p>
     <h1>ABSORB Assessment</h1>
     <p class="lead">Rate how ready your delivery system is to absorb AI-driven development speed. Answer 24 statements, enter how long a change waits at each stage, and add baseline metrics if you have them.</p>
     <div class="progress" aria-live="polite">
@@ -361,13 +371,17 @@ details.pipe-table table { margin-top: 8px; }
       sample: true, goal: "output",
       answers: [[2,1,1],[2,2,2],[2,1,2],[2,2,1],[3,2,2],[3,2,2],[1,2,1],[2,2,1]],
       days: [3, 4, 2, 5, 3, 6, 9], touch: [0.5, 1, 1.5, 0.5, 1, 0.5, 1], ai: [false, false, true, false, false, false, false],
-      sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "list", gi: 0, compare: { code: "", name: "" }
+      sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "list", gi: 0, compare: { code: "", name: "" }, decision: blankDecision()
     };
+  }
+  function blankDecision() {
+    var d = new Date(Date.now() + 90 * 864e5).toISOString().slice(0, 10);
+    return { constraint: "", action: "", metric: "lead", from: "", to: "", by: d, owner: "", actual: "", snap: null };
   }
   function blankState() {
     var a = []; for (var i = 0; i < DIMS.length; i++) a.push([null, null, null]);
     return { sample: false, goal: "output", answers: a, days: STAGES.map(function () { return null; }),
-      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "guided", gi: 0, compare: { code: "", name: "" } };
+      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}, mode: "guided", gi: 0, compare: { code: "", name: "" }, decision: blankDecision() };
   }
 
   var state;
@@ -380,6 +394,7 @@ details.pipe-table table { margin-top: 8px; }
   if (state.mode !== "guided" && state.mode !== "list") state.mode = state.sample ? "list" : "guided";
   state.gi = Math.min(23, Math.max(0, +state.gi || 0));
   if (!state.compare) state.compare = { code: "", name: "" };
+  if (!state.decision) state.decision = blankDecision();
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
   function $(id) { return document.getElementById(id); }
@@ -528,6 +543,23 @@ details.pipe-table table { margin-top: 8px; }
     } else { h += '<p class="caption">Answer some statements to see suggested first moves.</p>'; }
     h += '</section>';
 
+    /* decision record */
+    var D = state.decision;
+    var defC = c.longest >= 0 ? STAGES[c.longest] + " (" + (c.order.length ? DIMS[c.order[0].i].id + " " + DIMS[c.order[0].i].name + " is the weakest dimension" : "") + ")" : "";
+    h += '<section class="card" id="dec-card"><h2>Decision record</h2>' +
+      '<p class="sub">Write down what you believe and what you will do, with a prediction you can check. At the next assessment, enter what happened. Over a few rounds this shows how well your team reads its own system.</p>' +
+      '<div class="dec-grid">' +
+      '<label class="field wide">We believe the binding constraint is<input data-dec="constraint" maxlength="200" placeholder="' + esc(defC) + '" value="' + esc(D.constraint) + '"></label>' +
+      '<label class="field wide">So we will<textarea data-dec="action" maxlength="600" placeholder="One change, aimed at the constraint">' + esc(D.action) + '</textarea></label>' +
+      '<div class="dec-pred wide"><label class="field">We predict<select data-dec="metric">' + METRICS.map(function (m) { return '<option value="' + m.k + '"' + (D.metric === m.k ? ' selected' : '') + '>' + m.label + ' (' + m.unit + ')</option>'; }).join('') + '</select></label>' +
+      '<label class="field">goes from<input type="number" min="0" step="any" inputmode="decimal" data-dec="from" value="' + esc(D.from) + '" placeholder="' + esc(state.metrics[D.metric] || '') + '"></label>' +
+      '<label class="field">to<input type="number" min="0" step="any" inputmode="decimal" data-dec="to" value="' + esc(D.to) + '"></label>' +
+      '<label class="field">by<input type="date" data-dec="by" value="' + esc(D.by) + '"></label></div>' +
+      '<label class="field">Owner (optional)<input data-dec="owner" maxlength="60" value="' + esc(D.owner) + '"></label>' +
+      '<label class="field">Actual value, when you check<input type="number" min="0" step="any" inputmode="decimal" data-dec="actual" value="' + esc(D.actual) + '"></label>' +
+      '</div><div class="btns"><button class="btn primary" data-act="dec-snap">' + (D.snap ? 'Update the snapshot' : 'Save a snapshot of today') + '</button><button class="btn" data-act="dec-clear">Clear record</button></div>' +
+      '<div class="dec-out" id="dec-out" aria-live="polite"></div></section>';
+
     /* compare */
     h += '<section class="card" id="cmp-card"><h2>Compare with a colleague</h2>' +
       '<p class="sub">Two people score the same team on their own, then swap codes. Where you differ is where to start the conversation. A code holds only the 24 ratings, nothing else, and nothing is sent anywhere.</p>' +
@@ -545,6 +577,7 @@ details.pipe-table table { margin-top: 8px; }
     if (c.total > 0) paintPipe(c);
     $("cmp-theirs").value = state.compare.code; $("cmp-name").value = state.compare.name;
     paintCompare(c);
+    paintDecision(c);
   }
 
   /* ---------- pipeline view ---------- */
@@ -650,6 +683,45 @@ details.pipe-table table { margin-top: 8px; }
     });
     var rt = el("tr"); ["Total", fd(T), "", "", fd(c.after), ""].forEach(function (x) { rt.appendChild(el("td", "mono", x)); }); rt.firstChild.className = ""; bd.appendChild(rt);
     tbl.appendChild(bd); tb.appendChild(tbl);
+  }
+
+  /* ---------- decision record ---------- */
+  function esc(v) { return String(v === null || v === undefined ? "" : v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function metricOf(k) { return METRICS.filter(function (m) { return m.k === k; })[0] || METRICS[0]; }
+  function decisionStatus(c) {
+    var D = state.decision, r = {};
+    var f = parseFloat(D.from), t = parseFloat(D.to), a = parseFloat(D.actual);
+    if (!isNaN(f) && !isNaN(t) && !isNaN(a)) {
+      // Every baseline metric is better when lower.
+      r.verdict = a <= t ? "met" : a < f ? "partly" : "not";
+    }
+    r.timingChanged = !!(D.snap && D.snap.days && JSON.stringify(D.snap.days) !== JSON.stringify([state.days, state.touch]));
+    if (D.snap && D.snap.stage >= 0 && c.longest >= 0 && r.timingChanged) r.moved = D.snap.stage !== c.longest;
+    return r;
+  }
+  function paintDecision(c) {
+    var out = $("dec-out"); if (!out) return;
+    out.textContent = "";
+    var D = state.decision, st = decisionStatus(c), m = metricOf(D.metric);
+    if (!D.snap && !D.action) { out.appendChild(el("p", "caption", "Nothing recorded yet. The snapshot keeps today's constraint and scores so the next assessment can show what moved.")); return; }
+    if (D.snap) {
+      out.appendChild(el("p", "caption", "Snapshot " + D.snap.date + ": constraint " + (D.snap.stage >= 0 ? STAGES[D.snap.stage] : "not set") + ", level " + D.snap.level + "."));
+      if (st.moved === true) out.appendChild(el("p", "", "The constraint moved from " + STAGES[D.snap.stage] + " to " + STAGES[c.longest] + ". Expected once the first constraint is relieved (H4): re-aim the next change at " + STAGES[c.longest] + "."));
+      else if (st.moved === false) out.appendChild(el("p", "", "Stage timings have changed, but the constraint is still " + STAGES[c.longest] + ". The change has not relieved it yet."));
+      else out.appendChild(el("p", "caption", "After the change, re-enter the stage timings on the Answer tab. This record will then show whether the constraint moved."));
+      var ch = [];
+      D.snap.scores.forEach(function (s0, i) { var s1 = c.scores[i]; if (s0 !== null && s1 !== null && Math.abs(s1 - s0) >= 0.05) ch.push(DIMS[i].id + " " + (s1 > s0 ? "+" : "") + f1(s1 - s0)); });
+      if (ch.length) out.appendChild(el("p", "caption", "Score changes since the snapshot: " + ch.join(", ") + "."));
+    }
+    if (st.verdict) {
+      var label = { met: "Prediction met", partly: "Partly met: better, but short of the target", not: "Prediction not met" }[st.verdict];
+      var icon = { met: "●", partly: "◐", not: "○" }[st.verdict];
+      var v = el("p", "verdict"); v.appendChild(el("span", "ic", icon)); v.appendChild(document.createTextNode(label));
+      out.appendChild(v);
+      out.appendChild(el("p", "caption", m.label + ": predicted " + D.from + " → " + D.to + " " + m.unit + " by " + (D.by || "the date set") + "; actual " + D.actual + " " + m.unit + ". " + (st.verdict === "met" ? "Your read of the system held up." : "A miss is useful: it shows where your read of the system was off.")));
+    } else if (D.from !== "" && D.to !== "") {
+      out.appendChild(el("p", "caption", "Prediction: " + m.label + " from " + D.from + " to " + D.to + " " + m.unit + " by " + (D.by || "the date set") + ". Enter the actual value when you check."));
+    }
   }
 
   /* ---------- comparison ---------- */
@@ -782,6 +854,16 @@ details.pipe-table table { margin-top: 8px; }
         L.push("Compared with " + (state.compare.name || "a second rater") + ": average gap per dimension " + f2(r.mad) + " (H5 aims for 0.5 or less), " + r.within + " of " + r.dims.length + " dimensions within 0.5, " + r.near + " of " + r.pairs + " statements within 1 point" + (r.kappa === null ? "" : ", weighted kappa " + f2(r.kappa)));
         r.gaps.forEach(function (g) { L.push("  Gap: " + DIMS[g.di].id + "(" + (g.qi + 1) + ") you " + g.m + ", them " + g.t + ": " + DIMS[g.di].q[g.qi]); });
       }
+    }
+    var D = state.decision;
+    if (D && (D.action || D.constraint || D.to !== "")) {
+      var mm = metricOf(D.metric), ds = decisionStatus(c);
+      L.push(""); L.push("Decision record:");
+      L.push("  Constraint: " + (D.constraint || (c.longest >= 0 ? STAGES[c.longest] : "not stated")));
+      if (D.action) L.push("  Action: " + D.action.replace(/\s+/g, " "));
+      if (D.from !== "" || D.to !== "") L.push("  Prediction: " + mm.label + " from " + D.from + " to " + D.to + " " + mm.unit + " by " + D.by + (D.owner ? " (owner: " + D.owner + ")" : ""));
+      if (ds.verdict) L.push("  Result: actual " + D.actual + " " + mm.unit + ", " + { met: "met", partly: "partly met", not: "not met" }[ds.verdict]);
+      if (D.snap && ds.moved !== undefined) L.push("  Constraint since " + D.snap.date + ": " + (ds.moved ? "moved from " + STAGES[D.snap.stage] + " to " + STAGES[c.longest] : "unchanged (" + STAGES[c.longest] + ")"));
     }
     L.push(""); L.push("Your code: " + encodeCode(state.answers));
     if (c.order.length) {
@@ -934,6 +1016,8 @@ details.pipe-table table { margin-top: 8px; }
     else if (act === "g-unanswered") { var k = 0; for (; k < 24; k++) { var av = state.answers[Math.floor(k / 3)][k % 3]; if (av === null || av === undefined) break; } state.gi = k; save(); paintGuided(true); }
     else if (act === "g-results") { showTab("results"); window.scrollTo(0, 0); }
     else if (act === "copy-code") { var cm = $("cmp-mine"), mg = $("cmp-msg"); try { navigator.clipboard.writeText(cm.value).then(function () { mg.textContent = "Code copied."; }, function () { cm.select(); mg.textContent = "Selected. Press Ctrl+C or Cmd+C to copy."; }); } catch (err) { cm.select(); mg.textContent = "Selected. Press Ctrl+C or Cmd+C to copy."; } }
+    else if (act === "dec-snap") { var cs = compute(); state.decision.snap = { date: new Date().toISOString().slice(0, 10), stage: cs.longest, days: [state.days.slice(), state.touch.slice()], level: cs.complete ? cs.level : "incomplete", scores: cs.scores.slice() }; if (!state.decision.constraint && cs.longest >= 0) state.decision.constraint = STAGES[cs.longest]; if (state.decision.from === "" && state.metrics[state.decision.metric]) state.decision.from = String(state.metrics[state.decision.metric]); save(); refresh(); }
+    else if (act === "dec-clear") { state.decision = blankDecision(); save(); refresh(); }
     else if (act === "clear-cmp") { state.compare = { code: "", name: "" }; save(); refresh(); }
     else if (act === "try-work") { state.sp = { stage: 2, factor: 10, cut: 0 }; save(); refresh(); }
     else if (act === "try-wait") { var cc = compute(); if (cc.longest >= 0) { state.sp = { stage: cc.longest, factor: 1, cut: 50 }; save(); refresh(); } }
@@ -952,11 +1036,13 @@ details.pipe-table table { margin-top: 8px; }
     if (t.name === "goal") { state.goal = t.value; touched(); }
     else if (t.getAttribute("data-d") !== null && t.type === "radio") { state.answers[+t.getAttribute("data-d")][+t.getAttribute("data-q")] = +t.value; touched(); }
     else if (t.getAttribute("data-ai") !== null) { state.ai[+t.getAttribute("data-ai")] = t.checked; touched(); }
+    else if (t.getAttribute("data-dec") === "metric") { refresh(); }
     else if (t.name === "amode") { state.mode = t.value; save(); renderAnswer(); }
     else if (t.name === "sp-stage") { state.sp.stage = +t.value; save(); repaint(); }
   });
   document.addEventListener("input", function (e) {
     var t = e.target;
+    if (t.hasAttribute && t.hasAttribute("data-dec")) { state.decision[t.getAttribute("data-dec")] = t.value; save(); var cd = compute(); paintDecision(cd); var gd = GOALS.filter(function (g) { return g.k === state.goal; })[0] || GOALS[0]; $("summary").value = summaryText(cd, gd, cd.order.length ? DIMS[cd.order[0].i] : null); return; }
     if (t.id === "cmp-theirs" || t.id === "cmp-name") { state.compare[t.id === "cmp-theirs" ? "code" : "name"] = t.value.trim(); save(); var cc2 = compute(); paintCompare(cc2); var gl = GOALS.filter(function (g) { return g.k === state.goal; })[0] || GOALS[0]; $("summary").value = summaryText(cc2, gl, cc2.order.length ? DIMS[cc2.order[0].i] : null); return; }
     if (t.id === "sp-factor") { state.sp.factor = +t.value; save(); repaint(); return; }
     if (t.id === "sp-cut") { state.sp.cut = +t.value; save(); repaint(); return; }
