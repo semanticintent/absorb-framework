@@ -2,7 +2,7 @@
 
 ## 0.1.1 (2026-11-02)
 
-Bug fixes to the assessment page. No change to the framework, scoring or wording.
+Version DOI [10.5281/zenodo.23896316](https://doi.org/10.5281/zenodo.23896316). Bug fixes to the assessment page. No change to the framework, scoring or wording.
 
 - The Answer panel always showed below Results, because a display rule overrode the `hidden` attribute. The Results and Answer tabs now switch.
 - Added `<!DOCTYPE html>` and a UTF-8 character encoding. Without them Safari showed "×" and "·" as garbled characters, and browsers rendered the page in quirks mode.

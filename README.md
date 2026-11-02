@@ -57,7 +57,7 @@ D1 Flow and constraints, D2 Verification and evidence, D3 Risk-tiered governance
 
 Shatny, M. (2026). *ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline* (Version 0.1.1) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23895787
 
-The DOI above always points to the latest version. To cite v0.1.0 exactly, use [10.5281/zenodo.23895788](https://doi.org/10.5281/zenodo.23895788). Metadata is in [`CITATION.cff`](CITATION.cff).
+The DOI above always points to the latest version. To cite one version exactly, use v0.1.1 [10.5281/zenodo.23896316](https://doi.org/10.5281/zenodo.23896316) or v0.1.0 [10.5281/zenodo.23895788](https://doi.org/10.5281/zenodo.23895788). Metadata is in [`CITATION.cff`](CITATION.cff).
 
 ## License
 
