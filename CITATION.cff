@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use ABSORB, please cite it using the metadata below."
+title: "ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline"
+version: "0.1.0"
+type: software
+# TODO: confirm author name and add ORCID if you have one.
+authors:
+  - family-names: "Shatny"
+    given-names: "Michael"
+# TODO: set to the actual release date.
+date-released: "2026-10-26"
+abstract: >-
+  A draft framework and self-assessment for judging whether an organization
+  can turn faster AI-driven coding into faster, safer delivery. Includes a
+  written specification, eight assessment dimensions, maturity levels,
+  autonomy tiers, baseline metrics and an interactive assessment tool.
+  Status: proposed framework, not validated.
+keywords:
+  - software delivery
+  - agentic software engineering
+  - readiness assessment
+  - theory of constraints
+  - verification
+# TODO: add after publishing.
+# repository-code: "https://github.com/<user>/absorb"
+# doi: "10.5281/zenodo.<id>"
+# license: CC-BY-4.0

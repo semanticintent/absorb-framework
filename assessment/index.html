@@ -1,0 +1,557 @@
+<title>ABSORB Assessment</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one column workbench. Header with progress, two tabs (Results first, Answer second), results read top-down: headline stats, dimension scores, stage timing, autonomy tiers, first moves, copyable summary. */
+:root {
+  --bg: #F2F5F6;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566774;
+  --line: #D3DBE0;
+  --accent: #0E6B78;
+  --accent-soft: #D9ECEF;
+  --on-accent: #FFFFFF;
+  --warn: #B24F08;
+  --warn-soft: #F8E6D8;
+  --track: #E4EAED;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1418; --surface: #141E24; --ink: #E5ECF0; --muted: #93A5B1; --line: #26363F;
+    --accent: #4DB4C2; --accent-soft: #153037; --on-accent: #08161A; --warn: #E58B4B; --warn-soft: #3A2616; --track: #1F2E36;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1418; --surface: #141E24; --ink: #E5ECF0; --muted: #93A5B1; --line: #26363F;
+  --accent: #4DB4C2; --accent-soft: #153037; --on-accent: #08161A; --warn: #E58B4B; --warn-soft: #3A2616; --track: #1F2E36;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; }
+h2 { font-size: 18px; }
+h3 { font-size: 15px; }
+p { margin: 0; }
+.eyebrow, .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lead { color: var(--muted); max-width: 64ch; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+header { display: flex; flex-direction: column; gap: 10px; }
+.progress { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.progress .meter { width: 140px; height: 6px; background: var(--track); border-radius: 3px; overflow: hidden; }
+.progress .meter i { display: block; height: 100%; background: var(--accent); }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs button {
+  font: inherit; font-weight: 500; background: none; border: 0; padding: 10px 14px; color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+button:focus-visible, input:focus-visible + span, select:focus-visible, input[type="number"]:focus-visible, textarea:focus-visible, .row:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+.panel { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card > .sub { color: var(--muted); font-size: 14px; max-width: 70ch; }
+.banner { background: var(--accent-soft); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; font-size: 14px; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: inherit; font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.stat .big { font-size: 26px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat .big small { font-size: 14px; font-weight: 500; color: var(--muted); }
+.stat .note { font-size: 13px; color: var(--muted); }
+.stat.hot { border-color: var(--warn); }
+.readout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; max-width: 70ch; }
+
+.chart { display: flex; flex-direction: column; gap: 6px; }
+.row { display: grid; grid-template-columns: minmax(118px, 220px) minmax(0, 1fr) 40px; gap: 12px; align-items: center; min-height: 30px; border-radius: 4px; }
+.row .name { font-size: 14px; display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.row .name .id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.track { position: relative; height: 12px; background: var(--track); border-radius: 0 4px 4px 0;
+  background-image: linear-gradient(to right, transparent calc(25% - 1px), var(--line) calc(25% - 1px), var(--line) 25%, transparent 25%, transparent calc(50% - 1px), var(--line) calc(50% - 1px), var(--line) 50%, transparent 50%, transparent calc(75% - 1px), var(--line) calc(75% - 1px), var(--line) 75%, transparent 75%);
+}
+.fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
+.fill.warn { background: var(--warn); }
+.fill.soft { background: var(--accent); opacity: 0.45; }
+.row .val { font-family: var(--font-mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+.axis { display: grid; grid-template-columns: minmax(118px, 220px) minmax(0, 1fr) 40px; gap: 12px; font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+.axis .ticks { display: flex; justify-content: space-between; }
+.caption { font-size: 13px; color: var(--muted); max-width: 72ch; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+.pill { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.pill.ready { color: var(--accent); }
+.pill.cond { color: var(--warn); }
+.pill.no { color: var(--muted); }
+
+.moves { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.move { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.move ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+textarea { width: 100%; min-height: 220px; resize: vertical; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; padding: 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+
+fieldset.dim { border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px 6px; margin: 0; min-width: 0; background: var(--surface); }
+fieldset.dim legend { font-weight: 600; padding: 0 6px; margin-left: -6px; }
+fieldset.dim legend .id { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-right: 6px; }
+.dim-note { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+.stmt { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 8px 20px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.stmt:first-of-type { border-top: 0; }
+.scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.scale label { display: block; position: relative; }
+.scale input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.scale span { display: block; text-align: center; padding: 7px 0; border: 1px solid var(--line); border-radius: 4px; font-family: var(--font-mono); font-size: 13px; color: var(--muted); background: var(--surface); }
+.scale input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 500; }
+.scale-key { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 16px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.field span.hint { color: var(--muted); font-size: 12px; }
+input[type="number"], select { font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); width: 100%; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips label { position: relative; }
+.chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; width: 100%; height: 100%; }
+.chips span { display: block; padding: 8px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); font-size: 14px; }
+.chips input:checked + span { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); font-weight: 500; box-shadow: inset 0 0 0 1px var(--accent); }
+td input[type="number"] { max-width: 110px; }
+.inline { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 14px; }
+.inline select { width: auto; }
+
+#tip { position: fixed; z-index: 50; pointer-events: none; max-width: 280px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; font-size: 12px; line-height: 1.4; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+#tip b { display: block; font-size: 13px; margin-bottom: 2px; }
+
+@media (max-width: 640px) {
+  .stmt { grid-template-columns: 1fr; }
+  .row, .axis { grid-template-columns: minmax(96px, 130px) minmax(0, 1fr) 34px; gap: 8px; }
+  .card { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fill, .progress .meter i { transition: width 0.25s ease; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Agentic Bottleneck, Speed &amp; Output Readiness Baseline</p>
+    <h1>ABSORB Assessment</h1>
+    <p class="lead">Rate how ready your delivery system is to absorb AI-driven development speed. Answer 24 statements, enter how long a change waits at each stage, and add baseline metrics if you have them.</p>
+    <div class="progress" aria-live="polite">
+      <span id="progress-text"></span>
+      <span class="meter" aria-hidden="true"><i id="progress-bar" style="width:0"></i></span>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Assessment views">
+    <button role="tab" id="tab-results" aria-controls="panel-results" aria-selected="true" data-tab="results">Results</button>
+    <button role="tab" id="tab-answer" aria-controls="panel-answer" aria-selected="false" data-tab="answer">Answer</button>
+  </div>
+
+  <div id="panel-results" class="panel" role="tabpanel" aria-labelledby="tab-results"></div>
+  <div id="panel-answer" class="panel" role="tabpanel" aria-labelledby="tab-answer" hidden></div>
+</div>
+<div id="tip" role="tooltip" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SCALE = ["Not true", "Rarely true", "Partly true", "Mostly true", "Fully true"];
+
+  var DIMS = [
+    { id: "D1", name: "Flow and constraints", covers: "The path from request to customer use, including stages outside engineering.",
+      q: ["We have mapped the path from request to customer use, including stages outside engineering.",
+          "We know how long changes wait at each stage, not only how long the work takes.",
+          "Approvals, releases and rollouts have been sped up or redesigned, not only coding."],
+      moves: ["Map one real change end to end and time every wait. Pick the longest stage AI has not touched and set a target for it.",
+              "Automate or batch approval and release steps that wait for people, and agree waiting-time targets for each stage."] },
+    { id: "D2", name: "Verification and evidence", covers: "Tests, independent checks, AI review, and proof that a change is safe.",
+      q: ["Automated tests give us enough confidence to ship routine changes.",
+          "Checks are independent of the AI that wrote the code, and humans audit a sample of approvals.",
+          "We track escaped defects and use them to improve tests and review."],
+      moves: ["Put an AI review on every change through a different path from the author agent, and audit a sample of approved changes each week.",
+              "Log every escaped defect with the check that should have caught it, and add that check."] },
+    { id: "D3", name: "Risk-tiered governance", covers: "Which changes need which level of human involvement.",
+      q: ["Changes are sorted into risk tiers with different review requirements.",
+          "A written policy says which changes may merge with no human or with one human.",
+          "Exceptions and overrides are logged and reviewed."],
+      moves: ["Draft four tiers with examples from your own repositories. Start by letting only the lowest tier merge with automated checks.",
+              "Log every override of the policy and review the log monthly."] },
+    { id: "D4", name: "Intent and specification", covers: "Clarity of requirements, acceptance criteria and recorded decisions.",
+      q: ["Work arrives with clear acceptance criteria before building starts.",
+          "Decisions and constraints are recorded where both people and agents can read them.",
+          "Each change can be traced to a requirement and to the tests that check it."],
+      moves: ["Require acceptance criteria before work starts, and reject tickets that lack them.",
+              "Keep decision records in the repository and link tests to the criteria they cover."] },
+    { id: "D5", name: "Environment and platform", covers: "CI speed, repository scale, previews, rollback and observability.",
+      q: ["CI and builds stay fast as the number of changes grows.",
+          "Any release can be rolled back quickly and safely.",
+          "Agents have the context they need: repository docs, conventions, preview environments and observability."],
+      moves: ["Measure CI queue time and rollback time this week and fix the slower of the two first.",
+              "Write the repository conventions and context agents need into versioned files, and add preview environments."] },
+    { id: "D6", name: "Accountability and ownership", covers: "Named humans for services and for release decisions.",
+      q: ["Every service has a named owner and an on-call rota.",
+          "A named person approves production releases for each service.",
+          "Incidents involving AI-written changes have a clear review process."],
+      moves: ["Publish an ownership map and name a release approver for every service.",
+              "Define an incident review for AI-written changes and run it on the next incident."] },
+    { id: "D7", name: "Measurement", covers: "Outcome metrics rather than activity metrics.",
+      q: ["We measure outcomes such as lead time, reverts and production incidents.",
+          "We do not treat PR counts or the share of AI-written code as success measures.",
+          "Metrics are reviewed on a schedule and change decisions."],
+      moves: ["Replace PR-count dashboards with lead time, review wait, revert rate and incidents per change.",
+              "Review the metrics monthly with the people who own the stages."] },
+    { id: "D8", name: "People and change", covers: "Skills, roles, junior pipeline, incentives and training.",
+      q: ["Reviewers' workload is sustainable at the current volume of changes.",
+          "People have training and time to work with AI tools, and roles reflect the new work.",
+          "Junior engineers have a path to build judgment."],
+      moves: ["Measure reviewer load and cap it, then move the capacity toward review and specification work.",
+              "Give juniors review and specification tasks with a mentor so judgment still develops."] }
+  ];
+
+  var STAGES = ["Prioritize", "Specify", "Build", "Review", "Test", "Approve and release", "Adopt and roll out"];
+
+  var LEVELS = [
+    ["Ad hoc", "Individuals use AI, but gains do not reach delivery."],
+    ["Assisted", "Tools are widely used, process is unchanged, and the queue forms at review."],
+    ["Gated", "Review and test gates are adapted and AI reviews every change."],
+    ["Governed", "Risk tiers, independent verification, named owners and outcome metrics."],
+    ["Adaptive", "Platform built for agent volume; most low-risk changes merge without humans."]
+  ];
+
+  var TIERS = [
+    { t: "T0 Low risk", ex: "Docs, test-only changes, internal tooling", human: "None beyond AI review", ready: 2, cond: 1.5 },
+    { t: "T1 Standard", ex: "Routine features in well-tested services", human: "One human, who may be the author", ready: 2.5, cond: 2 },
+    { t: "T2 Elevated", ex: "Shared libraries, migrations, authentication, payments", human: "Named owner plus a second reviewer", ready: 3, cond: 2.5 },
+    { t: "T3 Critical", ex: "Safety-critical, regulated, security-sensitive", human: "Explicit sign-off or change board, always", ready: 3.5, cond: 3 }
+  ];
+
+  var GOALS = [
+    { k: "output", label: "More output", text: "Goal: more output. Fix the stage where finished changes wait, then raise the volume of agent work." },
+    { k: "cost", label: "Lower cost", text: "Goal: lower cost. Confirm the binding constraint is fixed before reducing headcount, or the savings may not hold." },
+    { k: "risk", label: "Lower risk", text: "Goal: lower risk. Strengthen verification, governance and ownership (D2, D3, D6) before raising agent volume." },
+    { k: "mix", label: "A mix", text: "Goal: a mix. Agree the split between output and savings with the sponsor before choosing interventions." }
+  ];
+
+  var METRICS = [
+    { k: "lead", label: "Lead time, request to production", unit: "days" },
+    { k: "pickup", label: "Review pickup time", unit: "hours" },
+    { k: "zero", label: "Merges with zero review", unit: "%" },
+    { k: "revert", label: "Change failure or revert rate", unit: "%" },
+    { k: "incidents", label: "Incidents per 100 merged changes", unit: "count" },
+    { k: "ci", label: "CI queue time", unit: "minutes" },
+    { k: "rollback", label: "Time to roll back", unit: "minutes" }
+  ];
+
+  var KEY = "absorb-assessment-v1";
+
+  function sampleState() {
+    return {
+      sample: true, goal: "output",
+      answers: [[2,1,1],[2,2,2],[2,1,2],[2,2,1],[3,2,2],[3,2,2],[1,2,1],[2,2,1]],
+      days: [3, 4, 2, 5, 3, 6, 9], ai: [false, false, true, false, false, false, false],
+      sp: { stage: 2, factor: 3 }, metrics: {}
+    };
+  }
+  function blankState() {
+    var a = []; for (var i = 0; i < DIMS.length; i++) a.push([null, null, null]);
+    return { sample: false, goal: "output", answers: a, days: STAGES.map(function () { return null; }),
+      ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3 }, metrics: {} };
+  }
+
+  var state;
+  try { var raw = localStorage.getItem(KEY); state = raw ? JSON.parse(raw) : null; } catch (e) { state = null; }
+  if (!state || !state.answers || state.answers.length !== DIMS.length) state = sampleState();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function $(id) { return document.getElementById(id); }
+  function f1(n) { return (Math.round(n * 10) / 10).toFixed(1); }
+  function f2(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+
+  /* ---------- compute ---------- */
+  function compute() {
+    var c = { scores: [], answered: 0 };
+    DIMS.forEach(function (d, i) {
+      var vals = state.answers[i].filter(function (v) { return v !== null && v !== undefined; });
+      c.answered += vals.length;
+      c.scores.push(vals.length ? vals.reduce(function (a, b) { return a + b; }, 0) / vals.length : null);
+    });
+    c.complete = c.scores.every(function (s) { return s !== null; });
+    var known = c.scores.filter(function (s) { return s !== null; });
+    c.min = known.length ? Math.min.apply(null, known) : null;
+    c.order = c.scores.map(function (s, i) { return { i: i, s: s }; }).filter(function (o) { return o.s !== null; })
+      .sort(function (a, b) { return a.s - b.s || a.i - b.i; });
+    if (c.complete) {
+      var avg = c.scores.reduce(function (a, b) { return a + b; }, 0) / c.scores.length;
+      c.avg = avg;
+      c.level = Math.min(4, Math.floor(avg + 1e-9), Math.floor(c.min + 1e-9) + 1);
+      c.floor = Math.min(c.scores[1], c.scores[2], c.scores[4], c.scores[5]);
+    }
+    c.lowIdx = c.order.length ? c.order.filter(function (o) { return Math.abs(o.s - c.min) < 1e-9; }).map(function (o) { return o.i; }) : [];
+    var total = 0;
+    state.days.forEach(function (d) { total += d > 0 ? d : 0; });
+    c.total = total;
+    c.longest = -1;
+    if (total > 0) {
+      var best = -1;
+      state.days.forEach(function (d, i) { if (d > 0 && !state.ai[i] && d > best) { best = d; c.longest = i; } });
+    }
+    var sd = state.days[state.sp.stage] > 0 ? state.days[state.sp.stage] : 0;
+    c.speedup = total > 0 ? 1 / ((1 - sd / total) + (sd / total) / state.sp.factor) : null;
+    return c;
+  }
+
+  function tierStatus(t, f) {
+    if (f >= t.ready) return ["Ready", "ready", "●"];
+    if (f >= t.cond) return ["Conditional", "cond", "◐"];
+    return ["Not yet", "no", "○"];
+  }
+
+  /* ---------- results ---------- */
+  function renderResults(c) {
+    var h = "";
+    var goal = GOALS.filter(function (g) { return g.k === state.goal; })[0] || GOALS[0];
+    var low = c.order.length ? DIMS[c.order[0].i] : null;
+    var tie = c.lowIdx.length > 1 ? " Tied with " + c.lowIdx.slice(1).map(function (i) { return DIMS[i].name; }).join(", ") + "." : "";
+
+    if (state.sample) h += '<div class="banner"><span>Example answers are loaded. Open the Answer tab to replace them with yours.</span><span class="btns"><button class="btn primary" data-act="fresh">Start fresh</button></span></div>';
+
+    h += '<div class="stats">';
+    h += '<div class="stat"><span class="label">Readiness level</span><span class="big">' + (c.complete ? c.level + ' <small>' + LEVELS[c.level][0] + '</small>' : '—') + '</span><span class="note">' + (c.complete ? LEVELS[c.level][1] : 'Answer all 24 statements to see a level.') + '</span></div>';
+    h += '<div class="stat hot"><span class="label">Weakest dimension</span><span class="big">' + (low ? low.id + ' <small>' + f1(c.order[0].s) + ' of 4</small>' : '—') + '</span><span class="note">' + (low ? low.name + '.' + tie : 'No answers yet.') + '</span></div>';
+    h += '<div class="stat hot"><span class="label">Where work waits</span><span class="big">' + (c.longest >= 0 ? state.days[c.longest] + ' <small>of ' + c.total + ' days</small>' : '—') + '</span><span class="note">' + (c.longest >= 0 ? STAGES[c.longest] + ': the longest stage AI has not sped up.' : 'Enter stage times on the Answer tab.') + '</span></div>';
+    h += '<div class="stat"><span class="label">Autonomy floor</span><span class="big">' + (c.complete ? f1(c.floor) + ' <small>of 4</small>' : '—') + '</span><span class="note">Lowest of D2, D3, D5 and D6. It sets how much agent-driven change is safe.</span></div>';
+    h += '</div>';
+
+    h += '<p class="readout">' + goal.text + '</p>';
+
+    /* dimension chart */
+    h += '<section class="card"><h2>Scores by dimension</h2><p class="sub">Each score is the average of three statements on a 0 to 4 scale. The lowest dimension matters more than the average, so it is marked.</p><div class="chart" role="list">';
+    DIMS.forEach(function (d, i) {
+      var s = c.scores[i];
+      var isLow = s !== null && c.lowIdx.indexOf(i) > -1;
+      var tip = d.id + " " + d.name + "|" + (s === null ? "No answers yet" : "Score " + f2(s) + " of 4") + "|" + d.q.map(function (q, qi) { var v = state.answers[i][qi]; return (v === null || v === undefined ? "–" : v) + "  " + q; }).join("\n");
+      h += '<div class="row" role="listitem" tabindex="0" data-tip="' + tip.replace(/"/g, "&quot;") + '">' +
+        '<span class="name"><span class="id">' + d.id + '</span>' + d.name + (isLow ? ' <span class="tag warn">Lowest</span>' : '') + '</span>' +
+        '<span class="track"><span class="fill' + (isLow ? ' warn' : '') + '" style="width:' + (s === null ? 0 : s / 4 * 100) + '%"></span></span>' +
+        '<span class="val">' + (s === null ? '–' : f1(s)) + '</span></div>';
+    });
+    h += '</div><div class="axis"><span></span><span class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></span><span></span></div></section>';
+
+    /* stage timing */
+    h += '<section class="card"><h2>Where a change waits</h2><p class="sub">Elapsed days per stage for a typical change, from the Answer tab. The longest stage that AI has not sped up is the first candidate constraint.</p>';
+    if (c.total > 0) {
+      var mx = Math.max.apply(null, state.days.map(function (d) { return d > 0 ? d : 0; }));
+      h += '<div class="chart" role="list">';
+      STAGES.forEach(function (n, i) {
+        var d = state.days[i] > 0 ? state.days[i] : 0;
+        var isL = i === c.longest;
+        var tip = n + "|" + d + " of " + c.total + " days (" + Math.round(d / c.total * 100) + "%)" + (state.ai[i] ? "\nAI has sped this stage up." : "");
+        h += '<div class="row" role="listitem" tabindex="0" data-tip="' + tip.replace(/"/g, "&quot;") + '">' +
+          '<span class="name">' + n + (isL ? ' <span class="tag warn">Longest wait</span>' : '') + (state.ai[i] ? ' <span class="tag">AI-sped</span>' : '') + '</span>' +
+          '<span class="track"><span class="fill' + (isL ? ' warn' : state.ai[i] ? ' soft' : '') + '" style="width:' + (mx ? d / mx * 100 : 0) + '%"></span></span>' +
+          '<span class="val">' + d + '</span></div>';
+      });
+      h += '</div><p class="caption">Total ' + c.total + ' days. Bars are scaled to the longest stage.</p>';
+      h += '<div class="inline"><span>If</span><select id="sp-stage" aria-label="Stage to speed up">' + STAGES.map(function (n, i) { return '<option value="' + i + '"' + (i === state.sp.stage ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
+        '</select><span>became</span><select id="sp-factor" aria-label="Speedup factor">' + [2, 3, 5, 10].map(function (x) { return '<option value="' + x + '"' + (x === state.sp.factor ? ' selected' : '') + '>' + x + 'x</option>'; }).join('') +
+        '</select><span>faster, the whole path would be <b class="mono">' + f2(c.speedup) + 'x</b> faster.</span></div>';
+    } else {
+      h += '<p class="caption">Enter elapsed days for each stage on the Answer tab to see where work waits.</p>';
+    }
+    h += '</section>';
+
+    /* tiers */
+    h += '<section class="card"><h2>Autonomy tiers</h2>';
+    if (c.complete) {
+      h += '<p class="sub">Whether agent-driven change is safe at each tier, based on the autonomy floor of ' + f1(c.floor) + '. Thresholds are illustrative. Conditional means extra evidence or monitoring is needed first.</p>';
+      h += '<div class="scroll"><table><thead><tr><th>Tier</th><th>Example changes</th><th>Human involvement</th><th>Agent-driven</th></tr></thead><tbody>';
+      TIERS.forEach(function (t) {
+        var st = tierStatus(t, c.floor);
+        h += '<tr><td><b>' + t.t + '</b></td><td>' + t.ex + '</td><td>' + t.human + '</td><td><span class="pill ' + st[1] + '">' + st[2] + ' ' + st[0] + '</span></td></tr>';
+      });
+      h += '</tbody></table></div>';
+    } else {
+      h += '<p class="caption">Answer every statement to see which tiers are ready.</p>';
+    }
+    h += '</section>';
+
+    /* first moves */
+    h += '<section class="card"><h2>First moves</h2>';
+    if (c.order.length) {
+      h += '<p class="sub">For the two lowest dimensions. Fix the binding constraint first, then re-assess.</p><div class="moves">';
+      c.order.slice(0, 2).forEach(function (o) {
+        var d = DIMS[o.i];
+        h += '<div class="move"><h3><span class="mono">' + d.id + '</span> ' + d.name + ' <span class="mono" style="color:var(--muted)">' + f1(o.s) + '</span></h3><ul>' + d.moves.map(function (m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>';
+      });
+      h += '</div>';
+    } else { h += '<p class="caption">Answer some statements to see suggested first moves.</p>'; }
+    h += '</section>';
+
+    /* summary */
+    h += '<section class="card"><h2>Summary to copy</h2><p class="sub">Plain text you can paste into a document or message.</p><textarea id="summary" readonly aria-label="Assessment summary"></textarea><div class="btns"><button class="btn primary" data-act="copy">Copy summary</button><span id="copy-note" class="caption" aria-live="polite"></span></div></section>';
+
+    $("panel-results").innerHTML = h;
+    $("summary").value = summaryText(c, goal, low);
+  }
+
+  function summaryText(c, goal, low) {
+    var L = [];
+    L.push("ABSORB assessment, " + new Date().toISOString().slice(0, 10) + (state.sample ? " (example answers)" : ""));
+    L.push(goal.text);
+    L.push("");
+    L.push("Readiness level: " + (c.complete ? c.level + " " + LEVELS[c.level][0] : "incomplete (" + c.answered + " of 24 answered)"));
+    L.push("Dimension scores (0 to 4):");
+    DIMS.forEach(function (d, i) { L.push("  " + d.id + " " + d.name + ": " + (c.scores[i] === null ? "no answers" : f1(c.scores[i]))); });
+    if (low) L.push("Weakest: " + low.id + " " + low.name + " (" + f1(c.order[0].s) + ")");
+    if (c.total > 0) {
+      L.push("");
+      L.push("Elapsed days per stage (total " + c.total + "):");
+      STAGES.forEach(function (n, i) { L.push("  " + n + ": " + (state.days[i] > 0 ? state.days[i] : 0) + (state.ai[i] ? " (AI-sped)" : "")); });
+      if (c.longest >= 0) L.push("Longest stage not yet sped up by AI: " + STAGES[c.longest]);
+    }
+    if (c.complete) {
+      L.push("");
+      L.push("Autonomy floor: " + f1(c.floor) + " of 4");
+      TIERS.forEach(function (t) { L.push("  " + t.t + ": " + tierStatus(t, c.floor)[0]); });
+    }
+    var m = METRICS.filter(function (x) { return state.metrics[x.k] !== undefined && state.metrics[x.k] !== null && state.metrics[x.k] !== ""; });
+    L.push("");
+    L.push("Baseline metrics:");
+    if (m.length) m.forEach(function (x) { L.push("  " + x.label + ": " + state.metrics[x.k] + " " + x.unit); }); else L.push("  not recorded");
+    if (c.order.length) {
+      L.push("");
+      L.push("First moves:");
+      c.order.slice(0, 2).forEach(function (o) { L.push("  " + DIMS[o.i].id + " " + DIMS[o.i].name + ":"); DIMS[o.i].moves.forEach(function (mv) { L.push("   - " + mv); }); });
+    }
+    return L.join("\n");
+  }
+
+  /* ---------- answer panel ---------- */
+  function renderAnswer() {
+    var h = "";
+    h += '<div class="banner" id="sample-banner" ' + (state.sample ? '' : 'hidden') + '><span>Example answers are loaded. Edit any answer or start fresh.</span><span class="btns"><button class="btn primary" data-act="fresh">Start fresh</button></span></div>';
+    h += '<div class="btns"><button class="btn" data-act="fresh">Clear all answers</button><button class="btn" data-act="example">Load example</button></div>';
+
+    h += '<section class="card"><h2>1. What do you want from the extra speed?</h2><p class="sub">The goal changes how the results are read, not the scores.</p><div class="chips" role="radiogroup" aria-label="Goal">' +
+      GOALS.map(function (g) { return '<label><input type="radio" name="goal" value="' + g.k + '"' + (state.goal === g.k ? ' checked' : '') + '><span>' + g.label + '</span></label>'; }).join('') + '</div></section>';
+
+    h += '<section class="card"><h2>2. How long does a change wait at each stage?</h2><p class="sub">Typical elapsed days from request to customer use, including waiting. Tick the stages where AI has already sped things up.</p><div class="scroll"><table><thead><tr><th>Stage</th><th>Elapsed days</th><th>AI has sped this up</th></tr></thead><tbody>' +
+      STAGES.map(function (n, i) {
+        return '<tr><td>' + n + '</td><td><input type="number" min="0" step="0.5" inputmode="decimal" id="day-' + i + '" data-stage="' + i + '" aria-label="Elapsed days for ' + n + '" value="' + (state.days[i] === null || state.days[i] === undefined ? '' : state.days[i]) + '"></td><td><input type="checkbox" id="ai-' + i + '" data-ai="' + i + '" aria-label="AI has sped up ' + n + '"' + (state.ai[i] ? ' checked' : '') + '></td></tr>';
+      }).join('') + '</tbody></table></div></section>';
+
+    h += '<section class="card"><h2>3. How true is each statement for your organization?</h2><p class="scale-key">0 not true · 1 rarely · 2 partly · 3 mostly · 4 fully true</p></section>';
+    DIMS.forEach(function (d, di) {
+      h += '<fieldset class="dim"><legend><span class="id">' + d.id + '</span>' + d.name + '</legend><p class="dim-note">' + d.covers + '</p>';
+      d.q.forEach(function (q, qi) {
+        h += '<div class="stmt"><p>' + q + '</p><div class="scale" role="radiogroup" aria-label="' + q.replace(/"/g, "&quot;") + '">';
+        for (var v = 0; v < 5; v++) {
+          var on = state.answers[di][qi] === v;
+          h += '<label><input type="radio" name="a-' + di + '-' + qi + '" value="' + v + '" data-d="' + di + '" data-q="' + qi + '"' + (on ? ' checked' : '') + '><span title="' + SCALE[v] + '">' + v + '</span></label>';
+        }
+        h += '</div></div>';
+      });
+      h += '</fieldset>';
+    });
+
+    h += '<section class="card"><h2>4. Baseline metrics (optional)</h2><p class="sub">Recorded in the summary so you can compare at the next assessment. They are not scored.</p><div class="fields">' +
+      METRICS.map(function (m) {
+        var v = state.metrics[m.k];
+        return '<label class="field">' + m.label + '<input type="number" min="0" step="any" inputmode="decimal" id="m-' + m.k + '" data-metric="' + m.k + '" value="' + (v === undefined || v === null ? '' : v) + '"><span class="hint">' + m.unit + '</span></label>';
+      }).join('') + '</div></section>';
+
+    $("panel-answer").innerHTML = h;
+  }
+
+  /* ---------- progress, tabs, tooltip ---------- */
+  function updateProgress(c) {
+    $("progress-text").textContent = c.answered + " of 24 statements answered" + (c.complete ? " · level " + c.level + " " + LEVELS[c.level][0] : "");
+    $("progress-bar").style.width = (c.answered / 24 * 100) + "%";
+  }
+  function refresh() { var c = compute(); updateProgress(c); renderResults(c); }
+
+  function showTab(name) {
+    var isR = name !== "answer";
+    $("panel-results").hidden = !isR; $("panel-answer").hidden = isR;
+    $("tab-results").setAttribute("aria-selected", String(isR)); $("tab-answer").setAttribute("aria-selected", String(!isR));
+    try { history.replaceState(null, "", "#" + (isR ? "results" : "answer")); } catch (e) {}
+  }
+
+  var tip = $("tip");
+  function showTip(el, x, y) {
+    var parts = el.getAttribute("data-tip").split("|");
+    tip.innerHTML = "";
+    var b = document.createElement("b"); b.textContent = parts[0]; tip.appendChild(b);
+    var d = document.createElement("div"); d.textContent = parts.slice(1).join("\n"); d.style.whiteSpace = "pre-wrap"; tip.appendChild(d);
+    tip.hidden = false;
+    var w = tip.offsetWidth, hgt = tip.offsetHeight;
+    var left = Math.min(Math.max(8, x + 14), window.innerWidth - w - 8);
+    var top = y + 14 + hgt > window.innerHeight ? y - hgt - 10 : y + 14;
+    tip.style.left = left + "px"; tip.style.top = Math.max(8, top) + "px";
+  }
+  document.addEventListener("mouseover", function (e) { var el = e.target.closest && e.target.closest("[data-tip]"); if (el) showTip(el, e.clientX, e.clientY); });
+  document.addEventListener("mousemove", function (e) { var el = e.target.closest && e.target.closest("[data-tip]"); if (el && !tip.hidden) showTip(el, e.clientX, e.clientY); });
+  document.addEventListener("mouseout", function (e) { var el = e.target.closest && e.target.closest("[data-tip]"); if (el) tip.hidden = true; });
+  document.addEventListener("focusin", function (e) { var el = e.target.closest && e.target.closest("[data-tip]"); if (el) { var r = el.getBoundingClientRect(); showTip(el, r.left + 20, r.bottom - 10); } });
+  document.addEventListener("focusout", function () { tip.hidden = true; });
+
+  /* ---------- events ---------- */
+  function touched() { state.sample = false; var b = $("sample-banner"); if (b) b.hidden = true; save(); refresh(); }
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest("button");
+    if (!t) return;
+    if (t.getAttribute("data-tab")) { showTab(t.getAttribute("data-tab")); return; }
+    var act = t.getAttribute("data-act");
+    if (act === "fresh") { state = blankState(); save(); renderAnswer(); refresh(); }
+    else if (act === "example") { state = sampleState(); save(); renderAnswer(); refresh(); }
+    else if (act === "copy") {
+      var ta = $("summary"), note = $("copy-note");
+      function fallback() { ta.focus(); ta.select(); note.textContent = "Selected. Press Ctrl+C or Cmd+C to copy."; }
+      try {
+        navigator.clipboard.writeText(ta.value).then(function () { note.textContent = "Copied."; }, fallback);
+      } catch (err) { fallback(); }
+    }
+  });
+
+  document.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.name === "goal") { state.goal = t.value; touched(); }
+    else if (t.getAttribute("data-d") !== null && t.type === "radio") { state.answers[+t.getAttribute("data-d")][+t.getAttribute("data-q")] = +t.value; touched(); }
+    else if (t.getAttribute("data-ai") !== null) { state.ai[+t.getAttribute("data-ai")] = t.checked; touched(); }
+    else if (t.id === "sp-stage") { state.sp.stage = +t.value; save(); refresh(); }
+    else if (t.id === "sp-factor") { state.sp.factor = +t.value; save(); refresh(); }
+  });
+  document.addEventListener("input", function (e) {
+    var t = e.target;
+    if (t.getAttribute("data-stage") !== null) { state.days[+t.getAttribute("data-stage")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }
+    else if (t.getAttribute("data-metric") !== null) { state.metrics[t.getAttribute("data-metric")] = t.value; touched(); }
+  });
+
+  document.querySelectorAll(".tabs button").forEach(function (b) {
+    b.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { var n = b.getAttribute("data-tab") === "results" ? "answer" : "results"; showTab(n); $("tab-" + n).focus(); }
+    });
+  });
+
+  renderAnswer();
+  refresh();
+  showTab(location.hash === "#answer" ? "answer" : "results");
+})();
+</script>
