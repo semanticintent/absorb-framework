@@ -1,5 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ABSORB Assessment</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: one column workbench. Header with progress, two tabs (Results first, Answer second), results read top-down: headline stats, dimension scores, stage timing, autonomy tiers, first moves, copyable summary. */
 :root {
@@ -30,6 +33,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
   background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 1.5;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
@@ -140,8 +144,56 @@ td input[type="number"] { max-width: 110px; }
   .row, .axis { grid-template-columns: minmax(96px, 130px) minmax(0, 1fr) 34px; gap: 8px; }
   .card { padding: 16px; }
 }
+/* pipeline view: validated pairs light #B24F08/#008A9C, dark #D4762F/#139FB4 (dataviz validate_palette, all checks pass) */
+:root { --c-work: #B24F08; --c-wait: #EFC4A3; --s-work: #008A9C; --s-wait: #A6DCE3; --o-work: #8C9BA5; --o-wait: #D9E0E4; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --c-work: #D4762F; --c-wait: #5A3A22; --s-work: #139FB4; --s-wait: #17434B; --o-work: #5F717C; --o-wait: #28373F; }
+}
+:root[data-theme="dark"] { --c-work: #D4762F; --c-wait: #5A3A22; --s-work: #139FB4; --s-wait: #17434B; --o-work: #5F717C; --o-wait: #28373F; }
+.pipe-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); }
+.pipe-legend .key { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-flex; gap: 2px; width: 22px; height: 10px; }
+.sw i { flex: 1; border-radius: 2px; }
+.pipe { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; gap: 6px 10px; align-items: center; }
+.pipe .rl { font-size: 12px; color: var(--muted); }
+.pipe .rt { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+.pipe .track2 { position: relative; height: 28px; }
+.pipe .bar { display: flex; gap: 2px; height: 28px; width: 100%; }
+.pipe .seg { display: flex; gap: 2px; flex: 0 1 0; min-width: 2px; height: 100%; outline-offset: 2px; cursor: default; }
+.pipe .seg i { border-radius: 4px; height: 100%; min-width: 0; flex-basis: 0; }
+.pipe .seg:hover i, .pipe .seg:focus-visible i { filter: brightness(1.12); }
+.pipe .seg:focus-visible { outline: 2px solid var(--accent); }
+.r-c .work { background: var(--c-work); } .r-c .wait { background: var(--c-wait); }
+.r-s .work { background: var(--s-work); } .r-s .wait { background: var(--s-wait); }
+.r-o .work { background: var(--o-work); } .r-o .wait { background: var(--o-wait); }
+.pipe .seg .nosplit { opacity: 0.55; }
+.r-c .nosplit { background: var(--c-work); } .r-s .nosplit { background: var(--s-work); } .r-o .nosplit { background: var(--o-work); }
+.pipe .names { display: flex; gap: 2px; font-size: 11px; color: var(--muted); }
+.pipe .names span { flex: 0 0 auto; overflow: hidden; white-space: nowrap; padding-left: 1px; }
+.pipe .names span.off { visibility: hidden; }
+.pipe .ticks2 { position: relative; height: 14px; font-family: var(--font-mono); font-size: 10px; color: var(--muted); border-top: 1px solid var(--line); }
+.pipe .ticks2 span { position: absolute; top: 2px; transform: translateX(-50%); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pipe .ticks2 span:first-child { transform: none; }
+.pipe-ctl { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
+.slider { display: grid; grid-template-columns: 64px minmax(0, 1fr) 120px; gap: 10px; align-items: center; font-size: 14px; }
+.slider input[type="range"] { width: 100%; accent-color: var(--accent); }
+.slider input:disabled { opacity: 0.4; }
+.slider output { font-family: var(--font-mono); font-size: 13px; }
+.pipe-out { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
+.pipe-out .hero { font-size: 48px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+.pipe-out .hero-l { font-size: 14px; color: var(--muted); }
+.pipe-out p { flex-basis: 100%; font-size: 14px; max-width: 72ch; }
+details.pipe-table summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.pipe-table table { margin-top: 8px; }
+@media (max-width: 560px) {
+  .pipe { grid-template-columns: 48px minmax(0, 1fr) 52px; }
+  .slider { grid-template-columns: 56px minmax(0, 1fr); }
+  .slider output { grid-column: 2; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .fill, .progress .meter i { transition: width 0.25s ease; }
+  .pipe .bar.after { transition: width 0.3s ease; }
+  .pipe .bar.after .seg, .pipe .bar.after .seg i { transition: flex-grow 0.3s ease, width 0.3s ease; }
 }
 </style>
 
@@ -265,19 +317,22 @@ td input[type="number"] { max-width: 110px; }
       sample: true, goal: "output",
       answers: [[2,1,1],[2,2,2],[2,1,2],[2,2,1],[3,2,2],[3,2,2],[1,2,1],[2,2,1]],
       days: [3, 4, 2, 5, 3, 6, 9], touch: [0.5, 1, 1.5, 0.5, 1, 0.5, 1], ai: [false, false, true, false, false, false, false],
-      sp: { stage: 2, factor: 3 }, metrics: {}
+      sp: { stage: 2, factor: 3, cut: 0 }, metrics: {}
     };
   }
   function blankState() {
     var a = []; for (var i = 0; i < DIMS.length; i++) a.push([null, null, null]);
     return { sample: false, goal: "output", answers: a, days: STAGES.map(function () { return null; }),
-      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3 }, metrics: {} };
+      touch: STAGES.map(function () { return null; }), ai: STAGES.map(function () { return false; }), sp: { stage: 2, factor: 3, cut: 0 }, metrics: {} };
   }
 
   var state;
   try { var raw = localStorage.getItem(KEY); state = raw ? JSON.parse(raw) : null; } catch (e) { state = null; }
   if (!state || !state.answers || state.answers.length !== DIMS.length) state = sampleState();
   if (!state.touch || state.touch.length !== STAGES.length) state.touch = STAGES.map(function () { return null; });
+  if (!state.sp) state.sp = { stage: 2, factor: 3, cut: 0 };
+  state.sp.factor = Math.min(20, Math.max(1, +state.sp.factor || 1));
+  state.sp.cut = Math.min(90, Math.max(0, +state.sp.cut || 0));
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
   function $(id) { return document.getElementById(id); }
@@ -312,14 +367,29 @@ td input[type="number"] { max-width: 110px; }
       var best = -1;
       state.days.forEach(function (d, i) { if (d > 0 && !state.ai[i] && d > best) { best = d; c.longest = i; } });
     }
-    // Amdahl check. Only hands-on time gets faster; waiting stays.
-    // With no hands-on time entered, all elapsed time counts as work, which gives an upper bound.
-    var sd = state.days[state.sp.stage] > 0 ? state.days[state.sp.stage] : 0;
-    var st = state.touch[state.sp.stage];
-    c.spUpper = !(st >= 0 && st !== null && st !== "");
-    var work = c.spUpper ? sd : Math.min(st, sd);
-    c.speedup = total > 0 ? total / (total - work + work / state.sp.factor) : null;
+    // What-if for one stage. Faster work shrinks only hands-on time; waiting is cut separately.
+    // With no hands-on time entered, all elapsed time counts as work (an upper bound) and waiting cannot be modelled.
+    c.stage = stageParts();
+    var p = c.stage[state.sp.stage];
+    c.spUpper = !p.split;
+    c.cut = c.spUpper ? 0 : state.sp.cut / 100;
+    c.saved = p.work - p.work / state.sp.factor + p.wait * c.cut;
+    c.after = total - c.saved;
+    c.speedup = total > 0 ? total / c.after : null;
+    var sw = 0, sd = 0;
+    c.stage.forEach(function (q) { if (q.split) { sw += q.wait; sd += q.d; } });
+    c.waitShare = sd > 0 ? sw / sd : null;
     return c;
+  }
+
+  function stageParts() {
+    return STAGES.map(function (n, i) {
+      var d = state.days[i] > 0 ? state.days[i] : 0;
+      var t = state.touch[i];
+      var split = t !== null && t !== undefined && t !== "" && +t >= 0;
+      var work = split ? Math.min(+t, d) : d;
+      return { d: d, work: work, wait: split ? d - work : 0, split: split };
+    });
   }
 
   function tierStatus(t, f) {
@@ -359,26 +429,26 @@ td input[type="number"] { max-width: 110px; }
     });
     h += '</div><div class="axis"><span></span><span class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span></span><span></span></div></section>';
 
-    /* stage timing */
-    h += '<section class="card"><h2>Where a change waits</h2><p class="sub">Elapsed days per stage for a typical change, from the Answer tab. The longest stage that AI has not sped up is the first candidate constraint.</p>';
+    /* pipeline */
+    h += '<section class="card" id="pipe-card"><h2>Where a change waits</h2>';
     if (c.total > 0) {
-      var mx = Math.max.apply(null, state.days.map(function (d) { return d > 0 ? d : 0; }));
-      h += '<div class="chart" role="list">';
-      STAGES.forEach(function (n, i) {
-        var d = state.days[i] > 0 ? state.days[i] : 0;
-        var isL = i === c.longest;
-        var tc = state.touch[i];
-        var tip = n + "|" + d + " of " + c.total + " days (" + Math.round(d / c.total * 100) + "%)" + (tc !== null && tc !== undefined && tc !== "" ? "\nHands-on " + Math.min(tc, d) + ", waiting " + Math.max(0, d - tc) + " days" : "") + (state.ai[i] ? "\nAI has sped this stage up." : "");
-        h += '<div class="row" role="listitem" tabindex="0" data-tip="' + tip.replace(/"/g, "&quot;") + '">' +
-          '<span class="name">' + n + (isL ? ' <span class="tag warn">Longest wait</span>' : '') + (state.ai[i] ? ' <span class="tag">AI-sped</span>' : '') + '</span>' +
-          '<span class="track"><span class="fill' + (isL ? ' warn' : state.ai[i] ? ' soft' : '') + '" style="width:' + (mx ? d / mx * 100 : 0) + '%"></span></span>' +
-          '<span class="val">' + d + '</span></div>';
-      });
-      h += '</div><p class="caption">Total ' + c.total + ' days. Bars are scaled to the longest stage.</p>';
-      h += '<div class="inline"><span>If</span><select id="sp-stage" aria-label="Stage to speed up">' + STAGES.map(function (n, i) { return '<option value="' + i + '"' + (i === state.sp.stage ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
-        '</select><span>became</span><select id="sp-factor" aria-label="Speedup factor">' + [2, 3, 5, 10].map(function (x) { return '<option value="' + x + '"' + (x === state.sp.factor ? ' selected' : '') + '>' + x + 'x</option>'; }).join('') +
-        '</select><span>faster, the whole path would be <b class="mono">' + (c.spUpper ? 'at most ' : '') + f2(c.speedup) + 'x</b> faster.</span></div>' +
-        '<p class="caption">' + (c.spUpper ? 'Upper bound: no hands-on time is entered for this stage, so all of its elapsed time is treated as work. Waiting does not get faster when the work does.' : 'Only the hands-on part of the stage is sped up; its waiting time stays the same.') + '</p>';
+      h += '<p class="sub">Each block is one stage of a typical change, sized by elapsed days. The solid part is hands-on work; the light part is waiting. Faster work shrinks only the solid part.</p>';
+      h += '<div class="pipe-legend">' +
+        '<span class="key"><span class="sw r-c"><i class="work"></i></span>Constraint: longest stage AI has not sped up</span>' +
+        '<span class="key"><span class="sw r-s"><i class="work"></i></span>Stage you are changing</span>' +
+        '<span class="key"><span class="sw r-o"><i class="work"></i></span>Other stages</span>' +
+        '<span class="key"><span class="sw r-o"><i class="work"></i><i class="wait"></i></span>Hands-on, then waiting</span>' +
+        (c.stage.some(function (q) { return q.d > 0 && !q.split; }) ? '<span class="key"><span class="sw r-o"><i class="work nosplit"></i></span>Not split: no hands-on time entered</span>' : '') +
+        '</div>';
+      h += '<div class="pipe" id="pipe"></div>';
+      h += '<div class="pipe-ctl"><div class="chips" role="radiogroup" aria-label="Stage to change">' +
+        STAGES.map(function (n, i) { return c.stage[i].d > 0 ? '<label><input type="radio" name="sp-stage" value="' + i + '"' + (i === state.sp.stage ? ' checked' : '') + '><span>' + n + '</span></label>' : ''; }).join('') + '</div>' +
+        '<label class="slider"><span>Work</span><input type="range" id="sp-factor" min="1" max="20" step="0.5" value="' + state.sp.factor + '" aria-describedby="sp-factor-out"><output id="sp-factor-out"></output></label>' +
+        '<label class="slider"><span>Waiting</span><input type="range" id="sp-cut" min="0" max="90" step="5" value="' + state.sp.cut + '" aria-describedby="sp-cut-out"><output id="sp-cut-out"></output></label>' +
+        '<p class="caption" id="sp-note"></p>' +
+        '<div class="btns"><span class="label">Try</span><button class="btn" data-act="try-work">Make Build 10× faster</button><button class="btn" data-act="try-wait" id="try-wait"></button></div></div>';
+      h += '<div class="pipe-out" id="pipe-out" aria-live="polite"></div>';
+      h += '<details class="pipe-table"><summary>Show as a table</summary><div class="scroll" id="pipe-table"></div></details>';
     } else {
       h += '<p class="caption">Enter elapsed days for each stage on the Answer tab to see where work waits.</p>';
     }
@@ -416,6 +486,125 @@ td input[type="number"] { max-width: 110px; }
 
     $("panel-results").innerHTML = h;
     $("summary").value = summaryText(c, goal, low);
+    if (c.total > 0) paintPipe(c);
+  }
+
+  /* ---------- pipeline view ---------- */
+  function fd(n) { return String(Math.round(n * 10) / 10); }
+  function days(n) { var v = fd(n); return v + (v === "1" ? " day" : " days"); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function niceStep(t) { var r = t / 4, m = Math.pow(10, Math.floor(Math.log10(r))); var f = r / m; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * m; }
+
+  function paintPipe(c) {
+    var root = $("pipe"); if (!root) return;
+    var P = c.stage, T = c.total, sel = state.sp.stage, s = state.sp.factor;
+    function role(i) { return i === c.longest ? "r-c" : i === sel ? "r-s" : "r-o"; }
+    function tipFor(i, work, wait, after) {
+      var p = P[i], lines = [];
+      lines.push((after ? "What if: " : "") + fd(work + wait) + " days, " + Math.round((work + wait) / T * 100) + "% of today's path");
+      lines.push(p.split ? "Hands-on " + fd(work) + " · waiting " + fd(wait) : "Hands-on time not entered");
+      if (i === c.longest) lines.push("Constraint: longest stage AI has not sped up");
+      if (state.ai[i]) lines.push("AI has already sped this stage up");
+      return STAGES[i] + "|" + lines.join("\n");
+    }
+    function fillBar(bar, after) {
+      var nodes = bar.children, k = 0;
+      P.forEach(function (p, i) {
+        if (!(p.d > 0)) return;
+        var work = p.work, wait = p.wait;
+        if (after && i === sel) { work = work / s; wait = wait * (1 - c.cut); }
+        var seg = nodes[k++];
+        if (!seg) {
+          seg = el("span"); seg.appendChild(el("i", "work")); seg.appendChild(el("i", "wait")); bar.appendChild(seg);
+          if (!after) seg.tabIndex = 0;
+        }
+        seg.className = "seg " + role(i);
+        seg.style.flexGrow = String(work + wait);
+        var wi = seg.children[0], wa = seg.children[1];
+        wi.className = p.split ? "work" : "work nosplit";
+        wi.style.flexGrow = String(p.split ? work : 1);
+        wa.style.flexGrow = String(p.split ? wait : 0);
+        wa.style.display = p.split && wait > 0 ? "" : "none";
+        var t = tipFor(i, work, wait, after);
+        seg.setAttribute("data-tip", t);
+        seg.setAttribute("aria-label", t.replace("|", ": ").replace(/\n/g, ". "));
+      });
+    }
+    if (!root.firstChild) {
+      root.appendChild(el("span", "rl", "Today"));
+      var t1 = el("div", "track2"); var b1 = el("div", "bar today"); b1.setAttribute("role", "group"); b1.setAttribute("aria-label", "Stages today"); t1.appendChild(b1); root.appendChild(t1);
+      root.appendChild(el("span", "rt", fd(T) + " d"));
+      root.appendChild(el("span", "rl", ""));
+      var names = el("div", "names"); root.appendChild(names); root.appendChild(el("span", "rl", ""));
+      P.forEach(function (p, i) { if (p.d > 0) { var n = el("span", "", STAGES[i]); n.style.flexGrow = String(p.d); n.style.flexBasis = "0"; names.appendChild(n); } });
+      root.appendChild(el("span", "rl", "What if"));
+      var t2 = el("div", "track2"); var b2 = el("div", "bar after"); b2.setAttribute("role", "group"); b2.setAttribute("aria-label", "Stages after the change"); t2.appendChild(b2); root.appendChild(t2);
+      root.appendChild(el("span", "rt", "")).id = "pipe-after-total";
+      root.appendChild(el("span", "rl", ""));
+      var ticks = el("div", "ticks2"); root.appendChild(ticks); root.appendChild(el("span", "rl", ""));
+      var st = niceStep(T);
+      for (var v = 0; v <= T + 1e-9; v += st) { var tk = el("span", "", v === 0 ? "0" : fd(v)); tk.style.left = (v / T * 100) + "%"; ticks.appendChild(tk); }
+      ticks.lastChild.textContent += " d";
+      fillBar(b1, false);
+      requestAnimationFrame(function () { fitNames(); });
+    }
+    root.querySelectorAll(".bar.today .seg").forEach(function (seg, k) {
+      var idx = P.map(function (p, i) { return p.d > 0 ? i : -1; }).filter(function (i) { return i >= 0; })[k];
+      seg.className = "seg " + role(idx);
+    });
+    var after = root.querySelector(".bar.after");
+    after.style.width = (c.after / T * 100) + "%";
+    fillBar(after, true);
+    $("pipe-after-total").textContent = fd(c.after) + " d";
+
+    var p = P[sel], name = STAGES[sel];
+    $("sp-factor-out").textContent = (s === 1 ? "unchanged" : fd(s) + "× faster");
+    var cutEl = $("sp-cut");
+    cutEl.disabled = c.spUpper;
+    $("sp-cut-out").textContent = c.spUpper ? "not modelled" : (state.sp.cut ? "cut " + state.sp.cut + "%" : "unchanged");
+    $("sp-note").textContent = c.spUpper
+      ? "No hands-on days are entered for " + name + ", so all of its time is treated as work. The result is an upper bound, and waiting cannot be modelled. Add hands-on days on the Answer tab."
+      : name + ": " + days(p.work) + " hands-on, " + days(p.wait) + " waiting.";
+    var tw = $("try-wait");
+    if (c.longest >= 0 && P[c.longest].split) { tw.hidden = false; tw.textContent = "Halve the waiting at " + STAGES[c.longest]; }
+    else tw.hidden = true;
+
+    var out = $("pipe-out"); out.textContent = "";
+    out.appendChild(el("span", "hero", (c.spUpper && c.saved > 0 ? "≤ " : "") + f2(c.speedup) + "×"));
+    out.appendChild(el("span", "hero-l", "faster end to end"));
+    var lead = s > 1 && c.cut > 0 ? "Making " + name + " work " + fd(s) + "× faster and cutting its waiting by " + state.sp.cut + "%"
+      : s > 1 ? "Making " + name + " work " + fd(s) + "× faster"
+      : c.cut > 0 ? "Cutting the waiting at " + name + " by " + state.sp.cut + "%" : "";
+    var msg = lead ? lead + " saves " + fd(c.saved) + " of " + days(T) + "." : "Move a slider to see what changing one stage does to the whole path.";
+    if (c.waitShare !== null) msg += " Across the stages with hands-on time entered, " + Math.round(c.waitShare * 100) + "% of elapsed time is waiting.";
+    out.appendChild(el("p", "", msg));
+
+    var tb = $("pipe-table"); tb.textContent = "";
+    var tbl = el("table"), th = el("thead"), tr = el("tr");
+    ["Stage", "Elapsed", "Hands-on", "Waiting", "What if", "Notes"].forEach(function (x) { tr.appendChild(el("th", "", x)); });
+    th.appendChild(tr); tbl.appendChild(th); var bd = el("tbody");
+    P.forEach(function (q, i) {
+      var w = q.work, wt = q.wait; if (i === sel) { w = w / s; wt = wt * (1 - c.cut); }
+      var r = el("tr"); var notes = [];
+      if (i === c.longest) notes.push("constraint"); if (i === sel) notes.push("changing"); if (state.ai[i]) notes.push("AI-sped");
+      [STAGES[i], fd(q.d), q.split ? fd(q.work) : "–", q.split ? fd(q.wait) : "–", fd(w + wt), notes.join(", ")].forEach(function (x) { r.appendChild(el("td", "mono", x)); });
+      r.firstChild.className = ""; bd.appendChild(r);
+    });
+    var rt = el("tr"); ["Total", fd(T), "", "", fd(c.after), ""].forEach(function (x) { rt.appendChild(el("td", "mono", x)); }); rt.firstChild.className = ""; bd.appendChild(rt);
+    tbl.appendChild(bd); tb.appendChild(tbl);
+  }
+
+  function fitNames() {
+    document.querySelectorAll("#pipe .names span").forEach(function (n) { n.classList.remove("off"); if (n.scrollWidth > n.clientWidth + 1) n.classList.add("off"); });
+  }
+  window.addEventListener("resize", function () { fitNames(); });
+
+  function repaint() {
+    var c = compute();
+    paintPipe(c);
+    var goal = GOALS.filter(function (g) { return g.k === state.goal; })[0] || GOALS[0];
+    var low = c.order.length ? DIMS[c.order[0].i] : null;
+    var sm = $("summary"); if (sm) sm.value = summaryText(c, goal, low);
   }
 
   function summaryText(c, goal, low) {
@@ -431,7 +620,7 @@ td input[type="number"] { max-width: 110px; }
       L.push("");
       L.push("Elapsed days per stage (total " + c.total + "):");
       STAGES.forEach(function (n, i) { var tc = state.touch[i]; L.push("  " + n + ": " + (state.days[i] > 0 ? state.days[i] : 0) + (tc !== null && tc !== undefined && tc !== "" ? " (hands-on " + tc + ")" : "") + (state.ai[i] ? " (AI-sped)" : "")); });
-      L.push("Speedup check: " + STAGES[state.sp.stage] + " " + state.sp.factor + "x faster gives " + (c.spUpper ? "at most " : "") + f2(c.speedup) + "x on the whole path");
+      L.push("What if: " + STAGES[state.sp.stage] + " work " + state.sp.factor + "x faster" + (c.cut > 0 ? ", waiting cut " + state.sp.cut + "%" : "") + " gives " + (c.spUpper ? "at most " : "") + f2(c.speedup) + "x on the whole path (" + fd(c.after) + " of " + fd(c.total) + " days)");
       if (c.longest >= 0) L.push("Longest stage not yet sped up by AI: " + STAGES[c.longest]);
     }
     if (c.complete) {
@@ -529,6 +718,8 @@ td input[type="number"] { max-width: 110px; }
     if (t.getAttribute("data-tab")) { showTab(t.getAttribute("data-tab")); return; }
     var act = t.getAttribute("data-act");
     if (act === "fresh") { state = blankState(); save(); renderAnswer(); refresh(); }
+    else if (act === "try-work") { state.sp = { stage: 2, factor: 10, cut: 0 }; save(); refresh(); }
+    else if (act === "try-wait") { var cc = compute(); if (cc.longest >= 0) { state.sp = { stage: cc.longest, factor: 1, cut: 50 }; save(); refresh(); } }
     else if (act === "example") { state = sampleState(); save(); renderAnswer(); refresh(); }
     else if (act === "copy") {
       var ta = $("summary"), note = $("copy-note");
@@ -544,11 +735,12 @@ td input[type="number"] { max-width: 110px; }
     if (t.name === "goal") { state.goal = t.value; touched(); }
     else if (t.getAttribute("data-d") !== null && t.type === "radio") { state.answers[+t.getAttribute("data-d")][+t.getAttribute("data-q")] = +t.value; touched(); }
     else if (t.getAttribute("data-ai") !== null) { state.ai[+t.getAttribute("data-ai")] = t.checked; touched(); }
-    else if (t.id === "sp-stage") { state.sp.stage = +t.value; save(); refresh(); }
-    else if (t.id === "sp-factor") { state.sp.factor = +t.value; save(); refresh(); }
+    else if (t.name === "sp-stage") { state.sp.stage = +t.value; save(); repaint(); }
   });
   document.addEventListener("input", function (e) {
     var t = e.target;
+    if (t.id === "sp-factor") { state.sp.factor = +t.value; save(); repaint(); return; }
+    if (t.id === "sp-cut") { state.sp.cut = +t.value; save(); repaint(); return; }
     if (t.getAttribute("data-stage") !== null) { state.days[+t.getAttribute("data-stage")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }
     else if (t.getAttribute("data-touch") !== null) { state.touch[+t.getAttribute("data-touch")] = t.value === "" ? null : Math.max(0, +t.value); touched(); }
     else if (t.getAttribute("data-metric") !== null) { state.metrics[t.getAttribute("data-metric")] = t.value; touched(); }

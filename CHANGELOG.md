@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased (v0.2 in progress)
+
+### Pipeline view
+
+- The "Where a change waits" chart is now a pipeline view. Each stage is a block sized by elapsed days and split into hands-on time (solid) and waiting (light). The constraint is amber, the stage being changed is teal, and other stages are grey. Two rows, today and what-if, share one scale, so the effect of a change shows as a shorter path.
+- Two sliders for one stage: **Work** (1 to 20 times faster) and **Waiting** (cut 0 to 90%). A large headline shows the whole-path speedup. Two "Try" buttons: make Build 10× faster, or halve the waiting at the constraint. On the example data these give 1.04× and 1.14×.
+- Tooltips on hover and keyboard focus, and a "Show as a table" view, so no value is available only on hover.
+- Chart colours were checked for contrast and colour-blind separation in light and dark mode.
+- The spec gains the waiting term in the speedup formula. It is for exploring only and changes no score, level or tier.
+
+### Fixes (also affect the released v0.1.0 page)
+
+- The Answer panel showed below Results at all times, because a display rule overrode the `hidden` attribute. Tabs now switch.
+- The page had no `<!DOCTYPE html>` or character encoding. Safari showed "×" and "·" as garbled characters.
+- Removed a leftover claude.ai meta tag.
+
 ## 0.1.0 (unreleased)
 
 ### 2026-11-02: review pass before first release

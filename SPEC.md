@@ -98,6 +98,14 @@ Example: coding is 30% of the work and becomes 3 times faster while everything e
 
 where E is the total elapsed time of the path and t_k is the hands-on time of the stage that gets s times faster. If hands-on time is not known, using the stage's whole elapsed time gives an upper bound, and the assessment labels it that way. Waiting is usually the larger share, which is why the constraint is found from where work waits rather than from where work is done.
 
+**Cutting the wait.** Process changes, not faster tools, shorten waiting: smaller batches, earlier review pickup, fewer hand-offs, automated approvals. The assessment's what-if view lets a team try both levers on one stage k, a work speedup s and a cut r to its waiting time w_k:
+
+```latex
+\text{speedup} = \frac{E}{E - t_k + t_k / s - r\,w_k}
+```
+
+With r = 0 this is the formula above. The what-if view is for exploring, not scoring: it changes no dimension score, level or tier. Waiting can only be modelled for a stage whose hands-on time is entered.
+
 ## The eight dimensions
 
 Each dimension is a place where speed can stall.
@@ -178,7 +186,7 @@ An interactive version of this framework scores D1 to D8, reads the maturity lev
 | Input | What you enter | What it produces |
 | --- | --- | --- |
 | Goal | More output, lower cost, lower risk, or a mix | A readout line that frames the results |
-| Stage timing | Elapsed days at seven stages, optional hands-on days, and where AI has sped up the work | The longest stage not yet sped up, and a whole-path speedup check (an upper bound when hands-on days are missing) |
+| Stage timing | Elapsed days at seven stages, optional hands-on days, and where AI has sped up the work | A pipeline view of every stage split into hands-on and waiting time, the longest stage not yet sped up, and a what-if for one stage (faster work, less waiting) with its whole-path speedup (an upper bound when hands-on days are missing) |
 | Statements | 24 ratings from 0 (not true) to 4 (fully true) | A score per dimension and the weakest dimension |
 | Baseline metrics (optional) | Seven metrics from the metrics table above | Values recorded in the summary, not scored |
 
