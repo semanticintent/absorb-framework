@@ -7,8 +7,7 @@ type: software
 authors:
   - family-names: "Shatny"
     given-names: "Michael"
-# TODO: set to the actual release date.
-date-released: "2026-10-26"
+date-released: "2026-11-02"
 abstract: >-
   A draft framework and self-assessment for judging whether an organization
   can turn faster AI-driven coding into faster, safer delivery. Includes a
@@ -22,6 +21,6 @@ keywords:
   - theory of constraints
   - verification
 license: MIT
-# TODO: uncomment once the repository exists, and add the DOI after the Zenodo release.
-# repository-code: "https://github.com/semanticintent/absorb-framework"
+repository-code: "https://github.com/semanticintent/absorb-framework"
+# TODO: add the DOI after the Zenodo release.
 # doi: "10.5281/zenodo.<id>"
