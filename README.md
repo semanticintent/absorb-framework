@@ -54,6 +54,11 @@ D1 Flow and constraints, D2 Verification and evidence, D3 Risk-tiered governance
 - No field results are included yet. `VALIDATION.md` lists what would count as evidence for or against the framework. Case studies are invited (see the template).
 - The link between readiness and headcount decisions is a hypothesis, not a finding.
 
+## Further reading
+
+- **Docs and the hosted assessment:** [absorb.semanticintent.dev](https://absorb.semanticintent.dev)
+- **The essay:** [The Wait Did Not Get Faster](https://semanticintent.dev/writing/the-wait-did-not-get-faster), on why faster coding barely moves delivery, and what factory electrification teaches about where the gains are.
+
 ## How to cite
 
 Shatny, M. (2026). *ABSORB: Agentic Bottleneck, Speed & Output Readiness Baseline* (Version 0.2.0) [Software]. Zenodo. https://doi.org/10.5281/zenodo.23895787
